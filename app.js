@@ -35,8 +35,10 @@ var app = express();
 
 //uglify
 var appClientFiles = [
+  'app_client/common/services/service.bowser.js',
   'app_client/app.js',
   'app_client/home/home.controller.js',
+  'app_client/common/services/service.detectBrowser.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js'
 ];
 var uglified = uglifyJs.minify(appClientFiles, { compress : false });

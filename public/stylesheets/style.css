@@ -25,3 +25,14 @@ video#bgvid {
   background: url(/images/welcome_image.jpeg) no-repeat;
 }
 video { display: block; }
+#title {
+  text-align: center;
+}
+@media screen and (max-device-width: 800px) {
+  html {
+     background: url(/images/welcome_image.jpeg) #000 no-repeat center center fixed;
+  }
+  #bgvid {
+    display: none;
+  }
+}

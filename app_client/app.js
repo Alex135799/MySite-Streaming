@@ -1,5 +1,6 @@
 (function () {
-  angular.module('mySite', ['ngRoute']);
+  angular.module('mySite', ['ngRoute'])
+    .value('bowser', bowser);
 
   function config ($routeProvider, $locationProvider) {
     $routeProvider

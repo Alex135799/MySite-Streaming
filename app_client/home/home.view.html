@@ -2,10 +2,9 @@
 <page-header content="vm.pageHeader"></page-header>
 
 <div class="container">
-  <p>{{ vm.usingie }}</p>
-  <video autoplay loop muted poster="/images/welcome_image.jpeg" class="full-background" id="bgvid">
-    <source src="/videos/deep_blue_sky.webm" type="video/webm"><!-- must be first format -->
-    <source src="/videos/deep_blue_sky.mp4" type="video/mp4">
+  <video autoplay loop muted poster="{{ vm.img }}" class="full-background" id="bgvid">
+    <source src="{{ vm.webm }}" type="video/webm"><!-- must be first format -->
+    <source src="{{ vm.mp4 }}" type="video/mp4">
   </video>
-  <a ng-click="vm.pauseVid()" class="btn btn-primary" id="pausevid">Pause</a>
+  <a ng-click="vm.pauseplay()" class="btn btn-primary" id="pauseplay">{{ vm.pauseplayText }}</a>
 </div>

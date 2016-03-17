@@ -7,8 +7,11 @@
   homeCtrl.$inject = ["$window", "browserDetector", "videoManip"]
   function homeCtrl ($window, browserDetector, videoManip) {
     var vm = this;
+    var pauseCap = "I am getting nausious...";
+    var playCap = "Much Better.";
 
-    vm.pauseplayText = "Pause";
+    vm.pauseplayIcon = "pause";
+    vm.pauseplayCap = pauseCap;
 
     vm.pageHeader = {
       title: "Welcome to Big Al's Site!",
@@ -19,10 +22,12 @@
       var id = 'bgvid';
       if (videoManip.isPlaying(id)){
         videoManip.pause(id);
-        vm.pauseplayText = "Play";
+        vm.pauseplayIcon = "play";
+        vm.pauseplayCap = playCap;
       } else {
         videoManip.play(id);
-        vm.pauseplayText = "Pause";
+        vm.pauseplayIcon = "pause";
+        vm.pauseplayCap = pauseCap;
       }
     };
 

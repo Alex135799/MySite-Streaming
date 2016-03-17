@@ -8,23 +8,10 @@ var bodyParser = require('body-parser');
 var uglifyJs = require('uglify-js');
 var fs = require('fs');
 
-/*require.config({
-  paths: {
-    "BigVideo": "bower_components/BigVideo.js/lib/bigvideo",
-    "jquery": "bower_components/jquery/jquery",
-    "jquery-ui": "bower_components/jquery-ui/ui/jquery-ui",
-    "videojs": "bower_components/video.js/video",
-    "imagesloaded": "bower_components/imagesloaded/imagesloaded",
-    "eventEmitter/EventEmitter": "bower_components/eventEmitter/EventEmitter",
-    "eventie/eventie": "bower_components/eventie/eventie"
-  },
-  shim: {
-    "videojs": {exports: 'videojs'}
-  }
-});*/
-
+require('./app_api/models/db');
 
 //var routes = require('./routes/index');
+var routesAPI = require('./app_api/routes/index');
 //var users = require('./routes/users');
 
 var app = express();
@@ -41,6 +28,7 @@ var appClientFiles = [
   'app_client/common/services/service.detectBrowser.js',
   'app_client/home/home.controller.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js',
+  'app_client/common/directives/blogList/blogList.directive.js',
   'app_client/common/directives/background_video/background_video.directive.js'
 ];
 var uglified = uglifyJs.minify(appClientFiles, { compress : false });
@@ -54,13 +42,13 @@ fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use('/api', routesAPI);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'app_client')));
-app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(function(req, res) {
   res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
 });

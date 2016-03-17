@@ -1,0 +1,163 @@
+var mongoose = require('mongoose');
+var Loc = mongoose.model('Location');
+var errck = require('./error_checking');
+
+var sendJSONresponse = function(res, status, content) {
+  res.status(status);
+  res.json(content);
+};
+
+var conversions = (function() {
+  var mtomi = .000621371;//6371; // km, miles is 3959
+
+  var getMilesFromMeters = function(rads) {
+    return parseFloat(rads * mtomi);
+  };
+
+  var getMetersFromMiles = function(distance) {
+    return parseFloat(distance / mtomi);
+  };
+
+  return {
+    getMilesFromMeters: getMilesFromMeters,
+    getMetersFromMiles: getMetersFromMiles
+  };
+})();
+
+/* GET list of locations */
+module.exports.locationsListByDistance = function(req, res) {
+  var lng = parseFloat(req.query.lng);
+  var lat = parseFloat(req.query.lat);
+  var maxDistance = parseFloat(req.query.maxDistance);
+  var point = {
+    type: "Point",
+    coordinates: [lng, lat]
+  };
+  var geoOptions = {
+    spherical: true,
+    maxDistance: conversions.getMetersFromMiles(maxDistance),
+    num: 10
+  };
+  if (!lng || !lat || !maxDistance) {
+    console.log('locationsListByDistance missing params');
+    sendJSONresponse(res, 404, {
+      "message": "lng, lat and maxDistance query parameters are all required"
+    });
+    return;
+  }
+  Loc.geoNear(point, geoOptions, function(err, results, stats) {
+    var locations;
+    console.log('Geo Options', geoOptions);
+    console.log('Geo Results', results);
+    console.log('Geo stats', stats);
+    if (errck.checkErr(res, err)) {console.log('geoNear error:', err); return;}
+    locations = buildLocationList(req, res, results, stats);
+    console.log('Sending Response: ' + locations);
+    sendJSONresponse(res, 200, locations);
+  });
+};
+
+var buildLocationList = function(req, res, results, stats) {
+  var locations = [];
+  results.forEach(function(doc) {
+    locations.push({
+      distance: conversions.getMilesFromMeters(doc.dis),
+      name: doc.obj.name,
+      address: doc.obj.address,
+      rating: doc.obj.rating,
+      facilities: doc.obj.facilities,
+      _id: doc.obj._id
+    });
+  });
+  return locations;
+};
+
+/* GET a location by the id */
+module.exports.locationsReadOne = function(req, res) {
+  console.log('Finding location details', req.params);
+  if (errck.checkLocationid(res, req.params)) {return;}
+  if (errck.checkLocationid(res, req.params.locationid)) {return;}
+  Loc
+    .findById(req.params.locationid)
+    .exec(function(err, location) {
+      if (errck.checkLocation(res, location)) {return;}
+      if (errck.checkErr(res, err)) {return;}
+      console.log(location);
+      sendJSONresponse(res, 200, location);
+    });
+};
+
+/* POST a new location */
+/* /api/locations */
+module.exports.locationsCreate = function(req, res) {
+  console.log(req.body);
+  Loc.create({
+    name: req.body.name,
+    address: req.body.address,
+    facilities: req.body.facilities.split(","),
+    coords: [parseFloat(req.body.lng), parseFloat(req.body.lat)],
+    openingTimes: [{
+      days: req.body.days1,
+      opening: req.body.opening1,
+      closing: req.body.closing1,
+      closed: req.body.closed1,
+    }, {
+      days: req.body.days2,
+      opening: req.body.opening2,
+      closing: req.body.closing2,
+      closed: req.body.closed2,
+    }]
+  }, function(err, location) {
+    if (errck.checkErr(res, err)) {console.log(err); return;}
+    console.log(location);
+    sendJSONresponse(res, 201, location);
+  });
+};
+
+/* PUT /api/locations/:locationid */
+module.exports.locationsUpdateOne = function(req, res) {
+  if (errck.checkLocationid(res, req.params.locationid)) {return;}
+  Loc
+    .findById(req.params.locationid)
+    .select('-reviews -rating')
+    .exec(
+      function(err, location) {
+        if (errck.checkLocation(res, location)) {return;}
+        if (errck.checkErr(res, err)) {return;}
+        location.name = req.body.name;
+        location.address = req.body.address;
+        location.facilities = req.body.facilities.split(",");
+        location.coords = [parseFloat(req.body.lng), parseFloat(req.body.lat)];
+        location.openingTimes = [{
+          days: req.body.days1,
+          opening: req.body.opening1,
+          closing: req.body.closing1,
+          closed: req.body.closed1,
+        }, {
+          days: req.body.days2,
+          opening: req.body.opening2,
+          closing: req.body.closing2,
+          closed: req.body.closed2,
+        }];
+        location.save(function(err, location) {
+          if (errck.checkErr(res, err)) {return;}
+          sendJSONresponse(res, 200, location);
+        });
+      }
+  );
+};
+
+/* DELETE /api/locations/:locationid */
+module.exports.locationsDeleteOne = function(req, res) {
+  var locationid = req.params.locationid;
+  if (errck.checkLocationid(res, locationid)) {return;}
+  Loc
+    .findByIdAndRemove(locationid)
+    .exec(
+      function(err, location) {
+        if (errck.checkErr(res, err)) {console.log(err); return;}
+        console.log("Location id " + locationid + " deleted");
+        sendJSONresponse(res, 204, null);
+      }
+    );
+};

@@ -28,6 +28,13 @@ video { display: block; }
 #title {
   text-align: center;
 }
+.vertical-center {
+  min-height: 65%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 65vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
+}
 @media screen and (max-device-width: 800px) {
   html {
      background: url(/images/welcome_image.jpeg) #000 no-repeat center center fixed;

@@ -11,6 +11,7 @@
     "debug": "~2.2.0",
     "dotenv": "^2.0.0",
     "express": "~4.13.1",
+    "mongoose-fs": "^0.2.7",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
     "uglify-js": "^2.6.2"

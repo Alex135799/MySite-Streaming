@@ -26,7 +26,9 @@ var appClientFiles = [
   'app_client/app.js',
   'app_client/common/services/service.videoManip.js',
   'app_client/common/services/service.detectBrowser.js',
+  'app_client/common/services/service.mySiteData.js',
   'app_client/home/home.controller.js',
+  'app_client/blog/blog.controller.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js',
   'app_client/common/directives/blogList/blogList.directive.js',
   'app_client/common/directives/background_video/background_video.directive.js'
@@ -42,13 +44,13 @@ fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use('/api', routesAPI);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'app_client')));
+app.use('/api', routesAPI);
 app.use(function(req, res) {
   res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
 });

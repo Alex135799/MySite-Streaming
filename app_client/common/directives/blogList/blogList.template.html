@@ -1,38 +1,12 @@
 <table class="table table-striped">
   <thead>
-    <tr>
-      <td>
-        Title
-      </td>
-      <td>
-        Description
-      </td>
-    </tr>
+    <tr><td>Title</td><td>Description</td><td>Date Created</td></tr>
   </thead>
   <tbody>
-    <tr>
-      <td>
-        My Big Adventures
-      </td>
-      <td>
-        Putting up a projector is fun, but dangerous.
-      </td>
-    </tr>
-    <tr>
-      <td>
-        My Second Big Adventure
-      </td>
-      <td>
-        My birthday suprise starts as fun, but ends up turning into a deadly afair!
-      </td>
-    </tr>
-    <tr>
-      <td>
-        My Weird Day
-      </td>
-      <td>
-        I saw a duck... then a goose... not sure which way is up anymore...
-      </td>
+    <tr ng-repeat="blog in data" ng-click="/blogs/{{ blog._id }}">
+      <td>{{ blog.title }}</td>
+      <td>{{ blog.description }}</td>
+      <td>{{ blog.date_inserted |date:'yyyy-MM-dd' }}</td>
     </tr>
   </tbody>
 </table>

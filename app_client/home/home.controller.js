@@ -4,8 +4,8 @@
     .module('mySite')
     .controller('homeCtrl', homeCtrl);
   
-  homeCtrl.$inject = ["$window", "browserDetector", "videoManip"]
-  function homeCtrl ($window, browserDetector, videoManip) {
+  homeCtrl.$inject = ["$location", "browserDetector", "videoManip", "mySiteData"]
+  function homeCtrl ($location, browserDetector, videoManip, mySiteData) {
     var vm = this;
     var pauseCap = "I am getting nausious...";
     var playCap = "Much Better.";
@@ -30,10 +30,25 @@
         vm.pauseplayCap = pauseCap;
       }
     };
-
+   
     vm.webm = "/videos/deep_blue_sky.webm";
     vm.mp4 = "/videos/deep_blue_sky.mp4";
     vm.img = "/images/welcome_image.jpeg";
+    
+    var successCall = function (data){
+      vm.blogData = data.data;
+    };
+
+    var errorCall = function (e){
+      console.log(e);
+      vm.pageHeader = { title : "error in api" };
+    };
+
+    mySiteData.blogs().then(successCall, errorCall);
+    
+    vm.goTo = function(blogid){
+      $location.url("#/blog/"+blogid);
+    };
 
     if(browserDetector.isLtIe9()){
       //well then you better head for the door. because none this will work.

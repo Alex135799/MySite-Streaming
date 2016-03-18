@@ -3,7 +3,7 @@ var mongoosefs = require('mongoose-fs');
 
 var blogSchema = new mongoose.Schema({
   title: {type: String, required: true},
-  author: {type: String, "default": "me"},
+  author: {type: String, required: true},
   description: String,
   body: {type: String, required: true},
   date_inserted: {type: Date, "default": Date.now},

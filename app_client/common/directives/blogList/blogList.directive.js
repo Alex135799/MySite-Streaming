@@ -8,7 +8,7 @@
     return {
       restrict: 'EA',
       scope: {
-        content : '=content'
+        data : '=data'
       },
       templateUrl: '/common/directives/blogList/blogList.template.html'
     };

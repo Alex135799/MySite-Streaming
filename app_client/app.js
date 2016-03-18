@@ -9,6 +9,11 @@
         controller: 'homeCtrl',
         controllerAs: 'vm'
       })
+      .when('/blog/:blogid', {
+        templateUrl: '/blog/blog.view.html',
+        controller: 'blogCtrl',
+        controllerAs: 'vm'
+      })
       .otherwise({redirectTo: '/'});
     
     $locationProvider.html5Mode({
@@ -19,4 +24,5 @@
   angular
     .module('mySite')
     .config(['$routeProvider', '$locationProvider', config]);
+
 })();

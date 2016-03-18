@@ -14,7 +14,19 @@
 
 <div class="container row col-xs-12">
   <div class="col-sm-6 col-lg-4 vertical-center">
-    <blog-list></blog-list>
+    <table class="table table-striped">
+      <thead>
+        <tr><td>Title</td><td>Description</td><td>Date Created</td></tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="blog in vm.blogData" ng-click="vm.goTo(blog._id)">
+          <td>{{ blog.title }}</td>
+          <td>{{ blog.description }}</td>
+          <td>{{ blog.date_inserted |date:'yyyy-MM-dd' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
   </div>
 </div>
 

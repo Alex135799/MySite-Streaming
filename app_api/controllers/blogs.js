@@ -1,9 +1,31 @@
 var mongoose = require('mongoose');
 var Blog = mongoose.model('Blog');
+var User = mongoose.model('User');
 
 var sendJSONresponse = function(res, status, content) {
   res.status(status);
   res.json(content);
+};
+
+var getAuthor = function(req, res, callback) {
+  if (req.payload && req.payload.username) {
+    User
+      .findOne({ username: req.payload.username })
+      .exec(function(err, user){
+        if(!user) {
+          sendJSONresponse(res, 404, { "message": "User not found" });
+          return;
+        } else if (err) {
+          console.log(err);
+          sendJSONresponse(res, 404, err);
+          return
+        }
+        callback(req, res, user.name);
+      });
+  } else {
+    sendJSONresponse(res, 404, { "message": "User not found" });
+    return;
+  }
 };
 
 var getListOfBlogs = function(req, res, search) {
@@ -45,7 +67,7 @@ module.exports.blogsListByAuth = getListOfBlogs("author");
 
 /* GET a blog by the id */
 module.exports.blogsReadOne = function(req, res) {
-  console.log('---------------------------'+req.params.blogid);
+  //console.log('---------------------------'+req.params.blogid);
   Blog.findById(req.params.blogid, function(err, result) {
     if(err) {sendJSONresponse(res, 404, err);}
     if(result.length === 0) {result = {body: "No such blog", title: "Not Found"}}
@@ -56,7 +78,14 @@ module.exports.blogsReadOne = function(req, res) {
 
 /* POST a new blog */
 module.exports.blogsCreate = function(req, res) {
-  
+  getAuthor(req, res, function(req, res, username) {
+    Blog.Create({
+      title : req.body.title,
+      description : req.body.description,
+      body : req.body.body,
+      author : req.body.author
+    });
+  });
 };
 
 /* PUT modify a blog */

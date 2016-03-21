@@ -4,8 +4,8 @@
     .module('mySite')
     .controller('homeCtrl', homeCtrl);
   
-  homeCtrl.$inject = ["$location", "browserDetector", "videoManip", "mySiteData"]
-  function homeCtrl ($location, browserDetector, videoManip, mySiteData) {
+  homeCtrl.$inject = ["$location", "browserDetector", "videoManip", "mySiteData", "authentication"]
+  function homeCtrl ($location, browserDetector, videoManip, mySiteData, authentication) {
     var vm = this;
     var pauseCap = "I am getting nausious...";
     var playCap = "Much Better.";
@@ -47,7 +47,15 @@
     mySiteData.blogs().then(successCall, errorCall);
     
     vm.goTo = function(blogid){
-      $location.url("#/blog/"+blogid);
+      $location.url("/blog/"+blogid);
+    };
+
+    vm.currentPath = $location.path();
+    vm.isLoggedIn = authentication.isLoggedIn();
+    vm.currentUser = authentication.currentUser();
+    vm.logout = function() {
+      authentication.logout();
+      $location.path('/');
     };
 
     if(browserDetector.isLtIe9()){

@@ -26,7 +26,13 @@
         </tr>
       </tbody>
     </table>
-
+  </div>
+  <div ng-show="vm.isLoggedIn" class="col-sm-6 col-lg-4 vertical-center">
+    <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
+    <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
+  </div>
+  <div ng-hide="vm.isLoggedIn" class="col-sm-6 col-lg-4 vertical-center">
+    <button id="login-btn" class="btn btn-primary center-block" href="/#login/?page={{ navvm.currentPath }}">Login</button>
   </div>
 </div>
 

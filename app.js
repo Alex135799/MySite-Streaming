@@ -7,8 +7,10 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var uglifyJs = require('uglify-js');
 var fs = require('fs');
+var passport = require('passport');
 
 require('./app_api/models/db');
+require('./app_api/config/passport');
 
 //var routes = require('./routes/index');
 var routesAPI = require('./app_api/routes/index');
@@ -27,6 +29,7 @@ var appClientFiles = [
   'app_client/common/services/service.videoManip.js',
   'app_client/common/services/service.detectBrowser.js',
   'app_client/common/services/service.mySiteData.js',
+  'app_client/common/services/service.authentication.js',
   'app_client/home/home.controller.js',
   'app_client/blog/blog.controller.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js',
@@ -54,6 +57,7 @@ app.use('/api', routesAPI);
 app.use(function(req, res) {
   res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
 });
+app.use(passport.initialize());
 
 // error handlers
 // Catch unauthorised errors

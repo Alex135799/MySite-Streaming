@@ -47,7 +47,7 @@
     mySiteData.blogs().then(successCall, errorCall);
     
     vm.goTo = function(blogid){
-      $location.url("/blog/"+blogid);
+      $location.path("/blog/"+blogid);
     };
 
     vm.currentPath = $location.path();
@@ -55,6 +55,7 @@
     vm.currentUser = authentication.currentUser();
     vm.logout = function() {
       authentication.logout();
+      vm.isLoggedIn = false;
       $location.path('/');
     };
 

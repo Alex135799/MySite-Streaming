@@ -1,19 +1,23 @@
-<navigation></navigation>
 
 <div class="container">
   <page-header content="vm.pageHeader"></page-header>
   <div class="row">
     <div class="col-md-6 col-sm-12">
-      <p class="lead">Not a member? Please <a href="/#login">Log In</a> instead.</p>
+      <p class="lead">Already a member? Please <a href="/#login">Log In</a> instead.</p>
       <form ng-submit="vm.onSubmit()">
         <div role="alert" ng-show="vm.formError" class="alert alert-danger">{{ vm.formError }}</div>
+        <div role="alert" ng-show="rcMailgun.mailgunStatus" class="alert alert-danger">{{ rcMailgun.mailgunStatus }}</div>
         <div class="form-group">
-          <label for="name">Name</label>
-          <input type="name" class="form-control" id="name" placeholder="Enter name" ng-model="vm.credentials.name">
+          <label for="screenname">Screen Name</label>
+          <input type="screenname" class="form-control" id="name" placeholder="What others see you as" ng-model="vm.credentials.screenname">
         </div>
         <div class="form-group">
           <label for="email">Email address</label>
           <input type="email" class="form-control" id="email" placeholder="Enter email" ng-model="vm.credentials.email">
+        </div>
+        <div class="form-group">
+          <label for="username">User Name</label>
+          <input type="username" class="form-control" id="username" placeholder="Used for logins" ng-model="vm.credentials.username">
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -24,5 +28,4 @@
     </div>
   </div>
   &nbsp
-  <footer-generic></footer-generic>
 </div>

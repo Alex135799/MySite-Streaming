@@ -8,12 +8,13 @@ var sendJSONresponse = function(res, status, content) {
 };
 
 module.exports.register = function(req, res) {
-  if(!req.body.name || !req.body.email || !req.body.password) {
+  if(!req.body.screenname || !req.body.username || !req.body.email || !req.body.password) {
     sendJSONresponse(res, 400, { "message": "All fields required" });
     return;
   }
   var user = new User();
-  user.name = req.body.name;
+  user.username = req.body.username;
+  user.screenname = req.body.screenname;
   user.email = req.body.email;
   user.setPassword(req.body.password);
   user.save(function(err) {

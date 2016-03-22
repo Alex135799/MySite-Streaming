@@ -31,6 +31,8 @@ var appClientFiles = [
   'app_client/common/services/service.mySiteData.js',
   'app_client/common/services/service.authentication.js',
   'app_client/home/home.controller.js',
+  'app_client/auth/login/login.controller.js',
+  'app_client/auth/register/register.controller.js',
   'app_client/blog/blog.controller.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js',
   'app_client/common/directives/blogList/blogList.directive.js',

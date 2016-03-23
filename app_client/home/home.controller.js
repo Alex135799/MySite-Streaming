@@ -58,6 +58,11 @@
       vm.isLoggedIn = false;
       $location.path('/');
     };
+    
+    vm.calendarView = 'month';
+    vm.calendarDate = new Date(2016,3,17);
+    vm.calendarTitle = "Big Al's Title";
+    vm.events = [];
 
     if(browserDetector.isLtIe9()){
       //well then you better head for the door. because none this will work.

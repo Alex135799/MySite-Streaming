@@ -1,5 +1,5 @@
 (function () {
-  angular.module('mySite', ['ngRoute'])
+  angular.module('mySite', ['mwl.calendar', 'ngRoute'])
     .value('bowser', bowser);
 
   function config ($routeProvider, $locationProvider) {

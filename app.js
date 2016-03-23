@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var uglifyJs = require('uglify-js');
+var browserifyJs = require('browserify');
 var fs = require('fs');
 var passport = require('passport');
 
@@ -39,6 +40,7 @@ var appClientFiles = [
   'app_client/common/directives/background_video/background_video.directive.js'
 ];
 var uglified = uglifyJs.minify(appClientFiles, { compress : false });
+var final = browserifyJs
 fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){
   if(err) {
     console.log(err);

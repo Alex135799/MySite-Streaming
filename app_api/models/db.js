@@ -43,4 +43,5 @@ process.on('SIGTERM', function() {
 });
 
 require('./blogs');
+require('./events');
 require('./users');

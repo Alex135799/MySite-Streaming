@@ -27,27 +27,36 @@
       </tbody>
     </table>
   </div>
-  <div ng-show="vm.isLoggedIn" class="col-sm-6 col-lg-4 vertical-center">
-    <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
-    <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
-  </div>
-  <div ng-hide="vm.isLoggedIn" class="col-sm-6 col-lg-4 vertical-center">
-    <a href="/login/?page={{ vm.currentPath }}" class="center-block"><button id="login-btn" class="btn btn-primary">Login</button></a>
+  <div class="col-sm-6 col-lg-4 container">
+    <div ng-show="vm.isLoggedIn" class="row-fluid col-xs-12">
+      <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
+      <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
+    </div>
+    <div ng-hide="vm.isLoggedIn" class="row-fluid col-xs-12">
+      <a href="/login/?page={{ vm.currentPath }}"><button id="login-btn" class="center-block btn btn-primary">Login</button></a>
+    </div>
+    <div ng-show="vm.dateSelected" class="row-fluid col-xs-12">
+      <br/>
+      <h2 class="text-center">New Event on {{ vm.eventDate }}</h2>
+      <hr/>
+      <form role="form" ng-submit="vm.eventSubmit()" class="form-horizontal">
+        <div class="form-group">
+          <label for="title" class="col-xs-10 col-sm-2 control-label">Title:</label>
+          <div class="col-sm-10">
+            <input type="text" name="title" required="required" ng-model="vm.event.title" class="form-control"></input>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="start" class="col-xs-10 col-sm-2 control-label">From:</label>
+          <uib-timepicker ng-model="vm.event.start" name="start" class="col-sm-3"></uib-timepicker>
+          <label for="end" class="col-xs-10 col-sm-2 control-label">To:</label>
+          <uib-timepicker ng-model="vm.event.end" name="end" class="col-sm-3"></uib-timepicker>
+        </div>
+      </form>
+    </div>
   </div>
   <div class="col-sm-6 col-lg-4 vertical-center">
-    <mwl-calendar
-      view="vm.calendarView"
-      view-date="vm.calendarDate"
-      events="vm.events"
-      view-title="vm.calendarTitle"
-      on-event-click="eventClicked(calendarEvent)"
-      on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
-      edit-event-html="'<i class=\'glyphicon glyphicon-pencil\'></i>'"
-      delete-event-html="'<i class=\'glyphicon glyphicon-remove\'></i>'"
-      on-edit-event-click="eventEdited(calendarEvent)"
-      on-delete-event-click="eventDeleted(calendarEvent)"
-      cell-is-open="true">
-    </mwl-calendar>
+    <div ui-calendar="vm.uiConfig.calendar" ng-model="vm.eventSources"></div>
   </div>
 </div>
 
@@ -57,3 +66,8 @@
     <source src="{{ vm.mp4 }}" type="video/mp4">
   </video>
 </div>
+
+<script type="text/javascript">
+  $('#startTimepicker').timepicker();
+  $('#endTimepicker').timepicker();
+</script>

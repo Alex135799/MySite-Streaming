@@ -8,9 +8,9 @@ var sendJSONresponse = function(res, status, content) {
 };
 
 var getAuthor = function(req, res, callback) {
-  if (req.payload && req.payload.username) {
+  if (req.payload && req.payload._id) {
     User
-      .findOne({ username: req.payload.username })
+      .findOne({ _id: req.payload._id })
       .exec(function(err, user){
         if(!user) {
           sendJSONresponse(res, 404, { "message": "User not found" });
@@ -20,7 +20,7 @@ var getAuthor = function(req, res, callback) {
           sendJSONresponse(res, 404, err);
           return
         }
-        callback(req, res, user.name);
+        callback(req, res, user._id);
       });
   } else {
     sendJSONresponse(res, 404, { "message": "User not found" });
@@ -78,12 +78,12 @@ module.exports.blogsReadOne = function(req, res) {
 
 /* POST a new blog */
 module.exports.blogsCreate = function(req, res) {
-  getAuthor(req, res, function(req, res, username) {
+  getAuthor(req, res, function(req, res, userid) {
     Blog.Create({
       title : req.body.title,
       description : req.body.description,
       body : req.body.body,
-      author : req.body.author
+      author : userid
     });
   });
 };

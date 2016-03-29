@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "angular-ui-bootstrap": "~1.2.5",
+    "angular-ui-bootstrap": "^1.2.5",
     "body-parser": "~1.13.2",
     "bootstrap": "^3.3.6",
     "bootstrap-timepicker": "^0.5.2",

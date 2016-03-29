@@ -36,15 +36,5 @@ video { display: block; }
   align-items: center;
 }
 #login-btn{
-  min-height: 80px;
-  min-width: 200px;
   opacity: .75;
-}
-@media screen and (max-device-width: 800px) {
-  html {
-     background: url(/images/welcome_image.jpeg) #000 no-repeat center center fixed;
-  }
-  #bgvid {
-    display: none;
-  }
 }

@@ -1,4 +1,4 @@
-<div class="container row">
+<div class="container row hidden-xs">
   <h4>
     <button ng-click="vm.pauseplay()" class="btn btn-primary" id="pauseplay">
       <span class="glyphicon glyphicon-{{ vm.pauseplayIcon }}"></span>
@@ -13,7 +13,8 @@
 <div id="addvspace"></div>
 
 <div class="container row col-xs-12">
-  <div class="col-sm-6 col-lg-4 vertical-center">
+
+  <div class="col-sm-6 col-lg-4 vertical-center" id="blogsContainer">
     <table class="table table-striped">
       <thead>
         <tr><td>Title</td><td>Description</td><td>Date Created</td></tr>
@@ -27,18 +28,23 @@
       </tbody>
     </table>
   </div>
-  <div class="col-sm-6 col-lg-4 container">
+
+  <div class="col-sm-6 col-lg-4 container" id="login-eventContainer">
     <div ng-show="vm.isLoggedIn" class="row-fluid col-xs-12">
       <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
       <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
     </div>
+
     <div ng-hide="vm.isLoggedIn" class="row-fluid col-xs-12">
       <a href="/login/?page={{ vm.currentPath }}"><button id="login-btn" class="center-block btn btn-primary">Login</button></a>
     </div>
+
     <div ng-show="vm.dateSelected" class="row-fluid col-xs-12">
       <br/>
       <h2 class="text-center">New Event on {{ vm.eventDate }}</h2>
       <hr/>
+      <div role="alert" ng-show="vm.formError" class="alert alert-danger text-center">{{ vm.formError }}</div>
+      <div role="alert" ng-show="vm.eventWarning" class="alert alert-warning text-center">{{ vm.eventWarning }}</div>
       <form role="form" ng-submit="vm.eventSubmit()" class="form-horizontal">
         <div class="form-group">
           <label for="title" class="col-xs-10 col-sm-2 control-label">Title:</label>
@@ -48,19 +54,32 @@
         </div>
         <div class="form-group row">
           <label for="start" class="col-xs-10 col-sm-2 control-label">From:</label>
-          <uib-timepicker ng-model="vm.event.start" name="start" class="col-sm-3"></uib-timepicker>
+          <uib-timepicker ng-click="vm.eventTimeWarning()" ng-model="vm.event.start" name="start" class="col-sm-3"></uib-timepicker>
           <label for="end" class="col-xs-10 col-sm-2 control-label">To:</label>
-          <uib-timepicker ng-model="vm.event.end" name="end" class="col-sm-3"></uib-timepicker>
+          <uib-timepicker ng-click="vm.eventTimeWarning()" ng-model="vm.event.end" name="end" class="col-sm-3"></uib-timepicker>
         </div>
+        <div class="form-group row">
+          <label for="allDay" class="col-xs-10 col-sm-4 control-label">
+            <input name="allDay" type="checkbox" ng-model="vm.event.allDay" ng-click="vm.clearTimes()">&nbsp
+            All Day
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit event</button>
       </form>
     </div>
   </div>
-  <div class="col-sm-6 col-lg-4 vertical-center">
-    <div ui-calendar="vm.uiConfig.calendar" ng-model="vm.eventSources"></div>
+
+  <div class="col-sm-6 col-lg-4 vertical-center hidden-xs" id="bigcalendarContainer">
+    <div ui-calendar="vm.uiConfig.bigcalendar" id="lgcalendar" ng-model="vm.eventSources"></div>
+  </div>
+
+  <div class="col-sm-6 col-lg-4 vertical-center hidden-lg hidden-md hidden-sm" id="smallcalendarContainer">
+    <div ui-calendar="vm.uiConfig.smallcalendar" id="smcalendar" ng-model="vm.eventSources"></div>
   </div>
 </div>
 
-<div class="container">
+<img src="{{ vm.img }}" class="full-background hidden-lg hidden-md hidden-sm"></img>
+<div class="container hidden-xs">
   <video autoplay loop muted poster="{{ vm.img }}" class="full-background" id="bgvid">
     <source src="{{ vm.webm }}" type="video/webm"><!-- must be first format -->
     <source src="{{ vm.mp4 }}" type="video/mp4">

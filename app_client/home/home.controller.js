@@ -59,27 +59,81 @@
       $location.path('/');
     };
     
-    vm.clear = function(){
-      vm.event.end = null;
+    vm.clearTimes = function(){
+      if(vm.event.allDay){
+        vm.event.end = null;
+        vm.event.start = null;
+      }else{
+        vm.eventWarning = "";
+      }
     };
+    
+    var timeFormat = function(dt){
+      var dts = [];
+      dt = dt+"";
+      dts = dt.split(" ");
+      tz = dts[5];
+      dt = dts[4];
+      dts = dt.split(":");
+      dts = [dts[0], dts[1]];
+      dt = dts.join(":");
+      tz = tz.split("GMT")[1].substr(0,3)+":00";
+      dt = dt + tz;
+      return dt;
+    }
+   
+    vm.eventSubmit = function(){
+      var event= {};
+      vm.formError="";
+      if(!vm.event.title){ vm.formError="Please fill out title."; }
+      if(!vm.event.start && !vm.event.end){
+        if(!vm.event.allDay){
+          vm.formError="Please submit time for event.";
+        }
+      }
+      if(vm.formError){ return false; }
+      var date = vm.eventDate;
+      event.title = vm.event.title;
+      event.start = vm.event.allDay ? date : date + "T" + timeFormat(vm.event.start);
+      if(vm.event.end && !vm.event.allDay){ event.end = date + "T" + timeFormat(vm.event.end); }
+      event.allDay = vm.event.allDay;
+      vm.doAddEvent(event);
+    }
+
+    vm.unselect = function() {
+      vm.dateSelected = false;
+    };
+
+    vm.doAddEvent = function(event){
+      vm.events.push(event);
+      //vm.pageHeader = { title: JSON.stringify(vm.events) }
+      if( $('#lgcalendar').is(':visible') ){
+        $('#lgcalendar').fullCalendar('refetchEvents');
+      }else{
+        $('#smcalendar').fullCalendar('refetchEvents');
+      }
+      //mySiteData.addEvent(vm.event);
+      vm.unselect();
+    };
+    
+    vm.eventTimeWarning = function(){
+      if(vm.event.allDay){
+        vm.eventWarning = "Warning: if 'All Day' is selected, other times will be ignored."
+      }
+    }
     
     vm.alertEventOnClick = function(date, jsEvent, view) {
       vm.dateSelected = true;
       vm.eventDate = date.format();
-      //alert('Clicked on: ' + date.format());
-      //alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-      //alert('Current view: ' + view.name);
-      // change the day's background color just for fun
-      //$(this).css('background-color', 'red');
-    };
-    vm.unselect = function(date, jsEvent, view) {
-      vm.dateSelected = false;
     };
     
-    vm.dateSelected = false; 
-    vm.eventSources = [];
+    vm.dateSelected = false;
+    vm.events = [];
+    vm.eventSources = {events: function(start, end, timezone, callback){
+      callback(vm.events);
+    }};
     vm.uiConfig = {
-      calendar:{
+      bigcalendar:{
         editable: true,
         selectable: true,
         header:{
@@ -91,6 +145,20 @@
         eventDrop: vm.alertOnDrop,
         //unselect: vm.unselect,
         eventResize: vm.alertOnResize
+      },
+      smallcalendar:{
+        editable: true,
+        selectable: true,
+        header:{
+          left: 'prev',
+          center: 'title',
+          right: 'next'
+        },
+        dayClick: vm.alertEventOnClick,
+        eventDrop: vm.alertOnDrop,
+        //unselect: vm.unselect,
+        eventResize: vm.alertOnResize,
+        defaultView: 'basicDay'
       }
     };
     

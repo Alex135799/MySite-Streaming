@@ -12,15 +12,15 @@ var passport = require('passport');
 require('./app_api/models/db');
 require('./app_api/config/passport');
 
-//var routes = require('./routes/index');
+var routesFan = require('./app_fantasy/routes/index');
 var routesAPI = require('./app_api/routes/index');
 //var users = require('./routes/users');
 
 var app = express();
 
 // view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'jade');
+app.set('views', path.join(__dirname, 'app_fantasy', 'views'));
+app.set('view engine', 'jade');
 
 //uglify
 var appClientFiles = [
@@ -57,6 +57,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'app_client')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use('/api', routesAPI);
+app.use('/fan', routesFan);
 app.use(function(req, res) {
   res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
 });

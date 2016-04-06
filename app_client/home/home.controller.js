@@ -12,6 +12,10 @@
 
     vm.pauseplayIcon = "pause";
     vm.pauseplayCap = pauseCap;
+  
+    vm.toFantasy = function(){
+      $window.location.href("/fan/home");
+    };
 
     vm.pageHeader = {
       title: "Welcome to Big Al's Site!",

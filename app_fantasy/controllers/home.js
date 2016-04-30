@@ -11,14 +11,31 @@ module.exports.home = function(req, res, next){
   var userToken = "";
   var userSecret = "";
   var strapline = "";
+  var leagueId = "nfl.l.31863";
   //yf.setUserToken( userToken, userSecret);
   console.log("before if: "+JSON.stringify(session));
-  if(!req.query.oauth_token){
-    console.log("making Token");
+  if(!session.RequestToken){
+    console.log("making user token");
     makeUserToken();
-  }else{
-    console.log("not making token");
+  }else if(!session.AccessToken){
+    console.log("making access token");
     makeAccessToken();
+  }else{
+    yf.setUserToken(session.AccessToken, session.AccessSecret)
+    yf.league.meta(leagueId, function(err, data){
+      if(err){
+        strapline = 'Error: '+err
+      }else{
+        strapline = 'All Set:\n'+JSON.stringify(data, null, 2)
+      }
+      res.render('home', {
+        title: 'Fantasy',
+        pageHeader: {
+          title: 'Fantasy Football',
+          strapline: strapline
+        }
+      });
+    });
   }
   function makeUserToken(){
     yf.oauth.getOAuthRequestToken(function(err, token, secret, results){
@@ -32,7 +49,7 @@ module.exports.home = function(req, res, next){
           }
         });
       }else{
-        strapline = token + " : " + secret + " : " + JSON.stringify(results);
+        //strapline = token + " : " + secret + " : " + JSON.stringify(results);
         session.RequestToken = token;
         session.RequestSecret = secret;
         var url = results.xoauth_request_auth_url;
@@ -41,13 +58,31 @@ module.exports.home = function(req, res, next){
     });
   }
   function makeAccessToken(){
-    res.render('home', {
-      title: 'Fantasy',
-      pageHeader: {
-        title: 'Fantasy Football',
-        strapline: session.RequestToken + " : " + req.query.oauth_verifier
+    if(req.query.oauth_verifier){
+      session.oauth_verifier = req.query.oauth_verifier
+    }
+    var oauth_token = session.RequestToken
+    var oauth_token_secret = session.RequestSecret
+    var oauth_verifier = session.oauth_verifier
+    yf.oauth.getOAuthAccessToken(oauth_token, oauth_token_secret, oauth_verifier,
+      function(err, oauth_access_token, oauth_access_token_secret, results){
+        if(err){
+          strapline = JSON.stringify(err);
+          res.render('home', {
+            title: 'Fantasy',
+            pageHeader: {
+              title: 'Fantasy Football',
+              strapline: strapline
+            }
+          });
+        }else{
+          session.AccessToken = oauth_access_token
+          session.AccessSecret = oauth_access_token_secret
+          strapline = session.AccessToken + " :access: " + session.AccessSecret
+          res.redirect('/fan/home')
+        }
       }
-    });
+    )
   }
   /*res.render('home', {
     title: 'Fantasy',

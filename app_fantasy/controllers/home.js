@@ -10,6 +10,8 @@ module.exports.home = function(req, res, next){
   console.log("after yf instance");
   var userToken = "";
   var userSecret = "";
+  var title = "";
+  var teams = [];
   var strapline = "";
   var leagueId = "nfl.l.31863";
   //yf.setUserToken( userToken, userSecret);
@@ -22,19 +24,54 @@ module.exports.home = function(req, res, next){
     makeAccessToken();
   }else{
     yf.setUserToken(session.AccessToken, session.AccessSecret)
-    yf.league.meta(leagueId, function(err, data){
+    yf.leagues.fetch(leagueId, "teams", function(err, leagues){
       if(err){
-        strapline = 'Error: '+err
+        strapline = 'Error: '+JSON.stringify(err)
+        title = "Too Bad"
+        teams = []
+        res.render('home', {
+          teams: teams,
+          title: 'Fantasy',
+          pageHeader: {
+            title: title,
+            strapline: strapline
+          }
+        });
       }else{
-        strapline = 'All Set:\n'+JSON.stringify(data, null, 2)
-      }
-      res.render('home', {
-        title: 'Fantasy',
-        pageHeader: {
-          title: 'Fantasy Football',
-          strapline: strapline
+        var team_keys = []
+        for(teamNum = 0; teamNum < leagues[0].teams.length; teamNum++){
+          team_keys.push(leagues[0].teams[teamNum].team_key)
         }
-      });
+        //console.log("getting teams keys: "+team_keys)
+        yf.players.teams(team_keys, function(err, players){
+          if(err){
+            res.render('home', {
+              title: 'Fantasy',
+              pageHeader: {
+                title: "Error",
+                strapline: JSON.stringify(err)
+              }
+            });
+          }
+          //console.log("getting teams callback")
+          for(teamNum = 0; teamNum < leagues[0].teams.length; teamNum++){
+            //console.log("players: "+JSON.stringify(players))
+            leagues[0].teams[teamNum] = players[teamNum]
+            //console.log("player: "+JSON.stringify(leagues[0].players[0]))
+          }
+          title = leagues[0].name
+          teams = leagues[0].teams
+          strapline = 'All Set'//:\n'+JSON.stringify(leagues[0], null, 2)
+          res.render('home', {
+            teams: teams,
+            title: 'Fantasy',
+            pageHeader: {
+              title: title,
+              strapline: strapline
+            }
+          });
+        })
+      }
     });
   }
   function makeUserToken(){
@@ -78,7 +115,7 @@ module.exports.home = function(req, res, next){
         }else{
           session.AccessToken = oauth_access_token
           session.AccessSecret = oauth_access_token_secret
-          strapline = session.AccessToken + " :access: " + session.AccessSecret
+          //strapline = session.AccessToken + " :access: " + session.AccessSecret
           res.redirect('/fan/home')
         }
       }

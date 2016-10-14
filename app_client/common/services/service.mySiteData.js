@@ -13,7 +13,7 @@
     var blogById = function (blogid) {
       return $http.get('/api/blog/' + blogid);
     };
-    
+
     var addReviewById = function (locationid, data) {
       return $http.post('/api/locations/' + locationid + '/reviews', data, {
         headers: {
@@ -21,7 +21,7 @@
         }
       });
     };
-    
+
     return {
       blogs : blogs,
       blogById : blogById,

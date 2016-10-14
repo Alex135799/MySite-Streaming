@@ -21,7 +21,7 @@ a {
   transform: translateX(-50%) translateY(-50%);
   background-size: cover;
 }
-video#bgvid { 
+video#bgvid {
   background: url(/images/welcome_image.jpeg) no-repeat;
 }
 video { display: block; }
@@ -31,7 +31,6 @@ video { display: block; }
 .vertical-center {
   min-height: 65%;  /* Fallback for browsers do NOT support vh unit */
   min-height: 65vh; /* These two lines are counted as one :-)       */
-
   display: flex;
   align-items: center;
 }

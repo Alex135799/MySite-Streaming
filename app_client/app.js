@@ -6,7 +6,7 @@
   function config ($routeProvider, $locationProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'home/home.view.html',
+        templateUrl: '/home/home.view.html',
         controller: 'homeCtrl',
         controllerAs: 'vm'
       })
@@ -26,7 +26,7 @@
         controllerAs: 'vm'
       })
       .otherwise({redirectTo: '/'});
-    
+
     $locationProvider.html5Mode({
       enabled: true,
       requireBase: false

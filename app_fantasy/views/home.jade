@@ -14,9 +14,19 @@ block content
     - if(team.players){
     - var players = team.players
     each player in players
-      .row
-        .col-xs-3
+      .media
+        .media-left.media-top
           img(src= player.headshot.url)
-        .col-xs-9
-          h4= player.name.full
+        .media-body
+          h4.media-heading= player.name.full
+          h5= player.editorial_team_full_name
+          h5= player.bye_weeks.week
+          - if(player.is_undroppable == 1)
+            h5 "This player is undropable"
     - }
+  - if(tryAgain){
+  .row
+    .col-xs-2.col-offset-3
+      a(href= "/fan/home")
+        button.btn.btn-primary Try Again
+  - }

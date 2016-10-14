@@ -1,6 +1,8 @@
 
 //load home page
 module.exports.home = function(req, res, next){
+  // Clear session for creation debuging
+  //req.session.destroy(function(err){console.log("SESSION DESTROY ERROR")})
   var session = req.session;
   var YahooFantasy = require('yahoo-fantasy');
   var ClientID = "dj0yJmk9YUpzYmt2T0psZ2FBJmQ9WVdrOWFqTlZOalJSTjJjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1kMg--";
@@ -26,8 +28,10 @@ module.exports.home = function(req, res, next){
     yf.setUserToken(session.AccessToken, session.AccessSecret)
     yf.leagues.fetch(leagueId, "teams", function(err, leagues){
       if(err){
+        req.session.destroy(function(err){})
         strapline = 'Error: '+JSON.stringify(err)
         title = "Too Bad"
+        tryAgain = true
         teams = []
         res.render('home', {
           teams: teams,
@@ -35,7 +39,8 @@ module.exports.home = function(req, res, next){
           pageHeader: {
             title: title,
             strapline: strapline
-          }
+          },
+          tryAgain: tryAgain
         });
       }else{
         var team_keys = []

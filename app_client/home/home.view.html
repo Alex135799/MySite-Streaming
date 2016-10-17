@@ -8,28 +8,21 @@
   </h4>
 </div>
 
+<div ng-show="vm.isLoggedIn" class="row-fluid offset-xs-6 col-xs-6">
+  <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
+  <button ng-click="vm.logout()" class="btn btn-primary center-block pull-right">Log Out</button>
+</div>
+
+<div ng-hide="vm.isLoggedIn" class="row-fluid offset-xs-6 col-xs-6">
+  <a href="/login/?page={{ vm.currentPath }}"><button id="login-btn" class="center-block btn btn-primary pull-right">Login</button></a>
+</div>
+
 <page-header content="vm.pageHeader"></page-header>
 
 <div id="addvspace"></div>
 
 <div class="container row col-xs-12">
-
-  <div class="col-sm-6 col-lg-4 vertical-center" id="blogsContainer">
-    <table class="table table-striped">
-      <thead>
-        <tr><td>Title</td><td>Description</td><td>Date Created</td></tr>
-      </thead>
-      <tbody>
-        <tr ng-repeat="blog in vm.blogData" ng-click="vm.goTo(blog._id)">
-          <td>{{ blog.title }}</td>
-          <td>{{ blog.description }}</td>
-          <td>{{ blog.date_inserted |date:'yyyy-MM-dd' }}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="col-sm-6 col-lg-4 container" id="login-eventContainer">
+  <div class="col-sm-12 container" id="login-eventContainer">
     <div ng-show="vm.isLoggedIn" class="row-fluid col-xs-12">
       <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
       <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
@@ -39,11 +32,16 @@
       <a href="/login/?page={{ vm.currentPath }}"><button id="login-btn" class="center-block btn btn-primary">Login</button></a>
     </div>
 
-    <div class="row-fluid col-xs-12">
-      <a href="/fan/home" target="_self" ><button class="btn btn-primary center-block">Fantasy Football!!</button></a>
-    </div>
-    <div class="row-fluid col-xs-12">
-      <a href="/calendar" target="_self" ><button class="btn btn-primary center-block">Calendar</button></a>
+    <div class="row-fluid">
+      <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <a href="/fan/home" target="_self" ><img src="{{ vm.yahooimg }}" class="home_thumbnail img-rounded center-block"></img></a>
+      </div>
+      <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <a href="/calendar" target="_self" ><img src="{{ vm.calimg }}" class="home_thumbnail img-rounded center-block"></img></a>
+      </div>
+      <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <a href="/blog" target="_self" ><img src="{{ vm.blogimg }}" class="home_thumbnail img-rounded center-block"></img></a>
+      </div>
     </div>
   </div>
 </div>
@@ -55,8 +53,3 @@
     <source src="{{ vm.mp4 }}" type="video/mp4">
   </video>
 </div>
-
-<script type="text/javascript">
-  $('#startTimepicker').timepicker();
-  $('#endTimepicker').timepicker();
-</script>

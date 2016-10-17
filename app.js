@@ -29,7 +29,7 @@ app.use(session({
     url: 'mongodb://localhost/mySite'
   })
 }))
-app.listen(80);
+app.listen(8090);
 // view engine setup
 app.set('views', path.join(__dirname, 'app_fantasy', 'views'));
 app.set('view engine', 'jade');
@@ -45,12 +45,13 @@ var angularFiles = [
   'app_client/home/home.controller.js',
   'app_client/auth/login/login.controller.js',
   'app_client/auth/register/register.controller.js',
-  'app_client/blog/blog.controller.js',
   'app_client/common/directives/pageHeader/pageHeader.directive.js',
   'app_client/common/directives/blogList/blogList.directive.js',
   'app_client/common/directives/background_video/background_video.directive.js',
   'apps/app_calendar/controllers/home.js',
-  'apps/app_calendar/app.js'
+  'apps/app_calendar/app.js',
+  'apps/app_blog/controllers/home.js',
+  'apps/app_blog/app.js'
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
 fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){
@@ -76,6 +77,8 @@ app.use('/fan', routesFan);
 app.use(function(req, res) {
   if(req.path.includes("calendar")){
     res.sendFile(path.join(__dirname, 'apps', 'app_calendar', 'index.html'));
+  }else if(req.path.includes("blog")){
+    res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
   }else{
     res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
   }

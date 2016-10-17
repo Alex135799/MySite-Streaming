@@ -38,6 +38,9 @@
     vm.webm = "/videos/deep_blue_sky.webm";
     vm.mp4 = "/videos/deep_blue_sky.mp4";
     vm.img = "/images/welcome_image.jpeg";
+    vm.yahooimg = "/images/yahoo.png";
+    vm.calimg = "/images/calendar.png";
+    vm.blogimg = "/images/blog.png";
 
     var successCall = function (data){
       vm.blogData = data.data;

@@ -10,11 +10,11 @@
         controller: 'homeCtrl',
         controllerAs: 'vm'
       })
-      .when('/blog/:blogid', {
+      /*.when('/blog/:blogid', {
         templateUrl: '/blog/blog.view.html',
         controller: 'blogCtrl',
         controllerAs: 'vm'
-      })
+      })*/
       .when('/login', {
         templateUrl: '/auth/login/login.view.html',
         controller: 'loginCtrl',

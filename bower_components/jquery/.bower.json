@@ -19,11 +19,7 @@
     "tag": "2.2.2",
     "commit": "086d381cd2f3b4b8b0af85ecb2c9593a61e5b4bd"
   },
-<<<<<<< HEAD
   "_source": "https://github.com/jquery/jquery-dist.git",
-=======
-  "_source": "git://github.com/jquery/jquery-dist.git",
->>>>>>> FETCH_HEAD
   "_target": "2.x",
   "_originalSource": "jquery"
 }

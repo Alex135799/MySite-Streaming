@@ -37,3 +37,14 @@ video { display: block; }
 #login-btn{
   opacity: .75;
 }
+.home_thumbnail{
+  max-width: 200px;
+  max-height: 200px;
+}
+.home_pic{
+  .col-xl-2
+  .col-lg-3
+  .col-md-4
+  .col-sm-6
+  .col-xs-12
+}

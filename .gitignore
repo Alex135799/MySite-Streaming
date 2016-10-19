@@ -1,3 +1,4 @@
 node_modules/*
 .env
 npm-debug.log
+java/mysite/lib/*

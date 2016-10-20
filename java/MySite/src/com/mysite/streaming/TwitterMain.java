@@ -1,11 +1,14 @@
 package com.mysite.streaming;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
@@ -15,6 +18,11 @@ import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
+import org.bson.Document;
+import org.bson.json.JsonParseException;
+
+import com.mongodb.spark.MongoSpark;
+import com.mongodb.spark.config.WriteConfig;
 
 import scala.Tuple2;
 import twitter4j.Status;
@@ -37,6 +45,8 @@ public class TwitterMain {
 	    
 		SparkConf conf = new SparkConf().setAppName("Top Hash Tags");
 		conf.setMaster("local[*]");
+		conf.set("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.myCollection?readPreference=primaryPreferred");
+		conf.set("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.myCollection");
 		JavaSparkContext ctx = new JavaSparkContext(conf);
 		JavaStreamingContext sctx = new JavaStreamingContext(ctx, new Duration(5 * 1000));
 		sctx.checkpoint("file:///home/n0252056/TwitterCheckpoint");
@@ -75,18 +85,36 @@ public class TwitterMain {
 			}
 		});
 		hashtagCountMap.print();
-		/*hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {
+		
+		/*Map<String, String> readOverrides = new HashMap<String, String>();
+		readOverrides.put("collection", "myCollection");
+		readOverrides.put("readPreference.name", "secondaryPreferred");
+		ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);
+		JavaRDD<Document> readRDD = MongoSpark.load(ctx,readConfig);
+		System.out.println("READ:");
+		readRDD.collect().forEach(doc -> System.out.println(doc));*/
+		
+		//TODO: Facebook
+		//https://developers.facebook.com/docs/javascript/quickstart
+		
+		Map<String, String> writeOverrides = new HashMap<String, String>();
+		writeOverrides.put("collection", "myCollection");
+		writeOverrides.put("writeConcern.w", "majority");
+		WriteConfig writeConf = WriteConfig.create(ctx).withOptions(writeOverrides);
+		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {
 			System.out.println("NEW RDD");
-			List<Tuple2<Long, String>> list = rdd.collect();
-			for(Tuple2<Long, String> tup : list){
-				System.out.println(tup._2+" : "+tup._1);
-			}
-		});*/
-		/*JavaPairRDD<Long, String> hashtagCountMapRDD = hashtagCountMap.compute(new Time(15*1000));
-		List<Tuple2<Long, String>> hashtagCountMapList = hashtagCountMapRDD.collect();
-		for(Tuple2<Long, String> hashtagCountMapT : hashtagCountMapList){
-			System.out.println(hashtagCountMapT);
-		}*/
+			//rdd = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
+			JavaRDD<Document> javadoc = rdd.map( pair -> {
+				try{
+					return Document.parse("{name: \""+pair._2+"\",id: "+pair._1+"}");
+				}catch(JsonParseException err){
+					return Document.parse("{name: \"JsonError\",id:0}");
+				}
+			});
+			javadoc = javadoc.filter( doc -> (int)doc.get("id") > 0);
+			//javadoc.collect().forEach( doc -> System.out.println(doc));
+			MongoSpark.save(javadoc, writeConf);
+		});
 		
 		sctx.start();
 		sctx.awaitTerminationOrTimeout((long) (60 * 1000));

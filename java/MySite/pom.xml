@@ -12,6 +12,12 @@
       <groupId>org.mongodb.mongo-hadoop</groupId>
       <artifactId>mongo-hadoop-core</artifactId>
       <version>2.0.0</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>servlet-api</artifactId>
+      		<groupId>javax.servlet</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-twitter_2.11 -->
     <dependency>

@@ -10,7 +10,7 @@ var fs = require('fs');
 var passport = require('passport');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
-var gracenote = require('node-gracenote');
+/*var gracenote = require('node-gracenote');
 var clientID = "";
 var cleintTag = "";
 var userId = "";
@@ -22,7 +22,7 @@ api.register(function(err, uid) {
       console.log("UID: "+uid)
     }
 });
-
+*/
 
 require('./app_api/models/db');
 require('./app_api/config/passport');
@@ -67,7 +67,7 @@ var angularFiles = [
   'apps/app_blog/app.js',
   'apps/app_social_stream/controllers/home.js',
   'apps/app_social_stream/app.js',
-  'apps/app_social_stream/facebook.js'
+  //'apps/app_social_stream/facebook.js'
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
 fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){

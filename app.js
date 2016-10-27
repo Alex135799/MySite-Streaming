@@ -65,9 +65,11 @@ var angularFiles = [
   'apps/app_calendar/app.js',
   'apps/app_blog/controllers/home.js',
   'apps/app_blog/app.js',
+  'apps/app_social_stream/providers/facebook.js',
   'apps/app_social_stream/controllers/home.js',
   'apps/app_social_stream/app.js',
-  //'apps/app_social_stream/facebook.js'
+  'apps/app_social_stream/directives/facebookLogin.directive.js',
+  'apps/app_social_stream/directives/facebook.directive.js',
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
 fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){

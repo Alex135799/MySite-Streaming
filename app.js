@@ -10,6 +10,19 @@ var fs = require('fs');
 var passport = require('passport');
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
+var gracenote = require('node-gracenote');
+var clientID = "";
+var cleintTag = "";
+var userId = "";
+var api = new Gracenote(clientId,clientTag,userId);
+api.register(function(err, uid) {
+    if(err){
+      console.log(err);
+    }else{
+      console.log("UID: "+uid)
+    }
+});
+
 
 require('./app_api/models/db');
 require('./app_api/config/passport');

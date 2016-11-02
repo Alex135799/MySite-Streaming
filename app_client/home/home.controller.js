@@ -41,6 +41,7 @@
     vm.yahooimg = "/images/yahoo.png";
     vm.calimg = "/images/calendar.png";
     vm.blogimg = "/images/blog.png";
+    vm.fbimg = "/images/facebook.png";
 
     var successCall = function (data){
       vm.blogData = data.data;

@@ -28,15 +28,6 @@
 
 	  facebookLike.$inject = ['$location'];
 	  function facebookLike($location) {
-	  	/*var template = '<div class="fb-like" ' +
-	  	'data-href="{{href || currentPage}}" ' +
-	  	'data-colorscheme="{{colorScheme || \'light\'}}" ' +
-	  	'data-layout="{{layout || \'standard\'}}" ' +
-	  	'data-action="{{ action || \'like\'}}" ' +
-	  	'data-show-faces="{{!!showFaces}}" ' +
-	  	'data-share="{{!!share}}"' +
-	  	'data-action="{{action || \'like\'}}"' +
-	  	'data-send="false"></div>';*/
 
 	  	return {
 	  		restrict:'E',
@@ -49,7 +40,6 @@
 	  			'action':      '@',
 	  			'share':       '@',
 	  		},
-	  		//template: template,
 	  		templateUrl: '/app_social_stream/directives/facebook.template.html',
 	  		link: function(scope, element, attrs) {
 	  			scope.currentPage = $location.absUrl();

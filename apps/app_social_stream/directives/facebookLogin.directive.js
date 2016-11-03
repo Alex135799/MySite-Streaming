@@ -25,14 +25,6 @@
 	 *                  <facebook-login size="large" auto-logout="false"></facebook-login>
 	 */
 	function facebookLogin () {
-		/*var template =
-			'<div class="fb-login-button" ' +
-			'data-max-rows="1" ' +
-			'data-size="{{size||\'medium\'}}" ' +
-			'data-show-faces="{{!!showFaces}}" ' +
-			'data-auto-logout-link="{{!!autoLogout}}" ' +
-			'data-scope="{{scope || \'basic_info\'}}"' +
-			'></div>';*/
 
 		return {
 			restrict: 'E',
@@ -43,7 +35,6 @@
 				'showFaces': '@',
 				'scope': '@'
 			},
-			//template: template
 			templateUrl: '/app_social_stream/directives/facebookLogin.template.html'
 		}
 	};

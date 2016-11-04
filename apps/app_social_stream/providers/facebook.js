@@ -64,7 +64,7 @@ function facebookProvider ($injector) {
 
 		var registerEventHandlers = function () {
 			console.log("Registering Handlers");
-			$rootScope.$broadcast("fb.init");
+			$rootScope.$broadcast("fb.init", {});
 			angular.forEach (facebookEvents, function (events, domain) {
 				console.log("There are events: "+ events + ", "+ domain);
 				angular.forEach (events, function (_event) {
@@ -83,6 +83,15 @@ function facebookProvider ($injector) {
 				FB.login (function (response) {
 					callback (response);
 				}, params);
+			});
+		}
+		
+		var loginStatus = function() {
+			console.log("Checking Login Status");
+			return promise (function (callback) {
+				FB.getLoginStatus( function (response) {
+					callback(response);
+				});
 			});
 		}
 
@@ -109,6 +118,7 @@ function facebookProvider ($injector) {
 				return provider.initialized;
 			},
 
+			loginStatus: loginStatus,
 			init: provider.init,
 			api: api,
 			login: login

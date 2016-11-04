@@ -34,14 +34,25 @@ var routesAPI = require('./app_api/routes/index');
 var app = express();
 
 //session setup
-app.use(session({
-  secret: 'superdupers3cre7',
-  resave: true,
-  saveUninitialized: true,
-  store: new MongoStore({
-    url: 'mongodb://localhost/mySite'
-  })
-}))
+if (app.get('env') === 'development') {
+	app.use(session({
+		secret: 'superdupers3cre7',
+		resave: true,
+		saveUninitialized: true,
+		store: new MongoStore({
+			url: 'mongodb://localhost/mySite'
+		})
+	}))
+}else{
+	app.use(session({
+		secret: 'superdupers3cre7',
+		resave: true,
+		saveUninitialized: true,
+		store: new MongoStore({
+			url: process.env.MONGOLAB_URI
+		})
+	}))
+}
 app.listen(8090);
 // view engine setup
 app.set('views', path.join(__dirname, 'app_fantasy', 'views'));

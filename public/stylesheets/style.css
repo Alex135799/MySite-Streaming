@@ -48,3 +48,16 @@ video { display: block; }
   .col-sm-6
   .col-xs-12
 }
+
+.photoShow{
+	
+}
+
+span.glyphicon-step-backward {
+	font-size: 3em;
+}
+
+span.glyphicon-step-forward {
+	font-size: 3em;
+}
+

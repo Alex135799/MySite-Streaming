@@ -5,8 +5,23 @@
 <div id="addvspace"></div>
 
 <div class="container row col-xs-12">
-  <facebook app-id="213101342444152" >
-  </facebook>
-  <img class="thumbnail" src={{vm.fbPic}} height="500" width=auto ></img>
-  {{vm.fbPhotoData}}
+  <div class="container text-center" ng-hide="vm.fbLoggedIn" >
+    <button ng-click="vm.login()" class="btn btn-primary">Log In Through FB</button><br />
+    <h4>You must do this in order to take advantage of this app.</h4>
+  </div>
+  
+  <div class="row vertical-center">
+    <div class="col-xs-1 vertical-center text-center" ng-click="vm.prevPic()">
+        <span class="glyphicon glyphicon-step-backward"></span>
+    </div>
+    <div class="col-xs-10">
+  	  <img class="thumbnail center-block" ng-src="{{vm.fbPic.source}}"></img>
+  	</div>
+  	<div class="col-xs-1 vertical-center text-center" ng-click="vm.nextPic()">
+  	  <span class="glyphicon glyphicon-step-forward"></span>
+  	</div>
+  </div>
+  <!-- {{vm.fbPhotoData}} -->
+  
+  <facebook app-id="213101342444152" />
 </div>

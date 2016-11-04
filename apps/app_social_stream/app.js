@@ -1,5 +1,5 @@
 (function() {
-
+	
 	angular.module('mySocialStream',[ 'bnx.module.facebook', 'ui.bootstrap', 'ngRoute' ])
 	  .value('bowser', bowser);
 

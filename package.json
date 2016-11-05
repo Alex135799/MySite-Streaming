@@ -8,7 +8,7 @@
   "dependencies": {
     "angular": "^1.5.8",
     "angular-carousel": "^1.0.1",
-    "angular-touch": "^1.5.8",
+    "angular-touch": "^1.5.2",
     "angular-ui-bootstrap": "^1.2.5",
     "body-parser": "~1.13.2",
     "bootstrap": "^3.3.6",

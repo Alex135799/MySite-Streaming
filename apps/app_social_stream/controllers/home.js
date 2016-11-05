@@ -2,8 +2,8 @@
 	
 	angular.module('mySite').controller('socialCtrl', socialCtrl);
 
-	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$scope" ]
-	function socialCtrl($routeParams, mySiteData, facebook, $scope) {
+	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$scope", "$window" ]
+	function socialCtrl($routeParams, mySiteData, facebook, $scope, $window) {
 		var vm = this;
 		
 		vm.fbLoggedIn = true;
@@ -15,9 +15,23 @@
 		var fbPics = [];
 		var onPic = 0;
 		
+		function findRightSizePic(arrOfPics){
+			var i;
+			var width = document.getElementById('imgDiv').clientWidth - 40;
+			for(i=0;i<arrOfPics.length;i++){
+				console.log("width: "+arrOfPics[i].width+" Page W: "+width);
+				if(arrOfPics[i].width > width){
+					continue;
+				}else{
+					return arrOfPics[i];
+				}
+			}
+			return arrOfPics[i];
+		}
+		
 		function nextPic(){
 			onPic = onPic + 1;
-			if(fbPics.length >= onPic){
+			if(fbPics.length > onPic){
 				populatePic(fbPics);
 			}else{
 				onPic = onPic - 1;
@@ -39,7 +53,8 @@
 			var promisePhotoApi = facebook.api('/'+fbPics[onPic].id+'?fields=images');
 			
 			promisePhotoApi.then(function(data){
-				vm.fbPic = data.images[0];
+				vm.fbPic = findRightSizePic(data.images);
+				//vm.fbPic = data.images[0];
 				//fbPics = data.images;
 			}, function(err){
 				alert('FAILED: '+ JSON.stringify(err));

@@ -110,8 +110,13 @@ app.use(function(req, res) {
 	    res.sendFile(path.join(__dirname, 'apps', 'app_social_stream', 'index.html'));
   }else if(req.path.includes("blog")){
     res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
-  }else if(req.path.includes("webhook.php")){
-	res.sendFile(path.join(__dirname,'webhook.php'));
+  }else if(req.path.includes("webhook")){
+	  if (req.body.hub_verify_token === 'abc123') {
+		  res.sendStatus(200).write(req.body.hub_challenge).end();
+		  //res.sendStatus(200).type('json').write("flerpyderp arggggggggggg").end();
+	  }else{
+		  res.sendStatus(400).end();
+	  }
   }else{
     res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
   }

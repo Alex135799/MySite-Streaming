@@ -110,6 +110,8 @@ app.use(function(req, res) {
 	    res.sendFile(path.join(__dirname, 'apps', 'app_social_stream', 'index.html'));
   }else if(req.path.includes("blog")){
     res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
+  }else if(req.path.includes("webhook.php")){
+	res.sendFile('webhook.php');
   }else{
     res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
   }

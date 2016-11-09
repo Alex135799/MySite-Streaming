@@ -114,7 +114,15 @@ app.use(function(req, res) {
 	  if (req.body["hub.verify_token"] === 'abc123') {
 		  res.status(200).send(req.body["hub.challenge"]);
 	  }else if(!req.body["hub.verify_token"]){
-		  res.status(200).send(req.body["hub.challenge"]);
+		  if(req.body["hub.challenge"]){
+			  res.status(200).send(req.body["hub.challenge"]);
+		  }else if(req.params["hub.challenge"]){
+			  res.status(200).send(req.params["hub.challenge"]);
+		  }else if(req.query["hub.challenge"]){
+			  res.status(200).send(req.query["hub.challenge"]);
+		  }else{
+			  res.sendStatus(400).end();
+		  }
 	  }else{
 		  res.sendStatus(400).end();
 	  }

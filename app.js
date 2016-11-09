@@ -113,7 +113,8 @@ app.use(function(req, res) {
   }else if(req.path.includes("webhook")){
 	  if (req.body["hub.verify_token"] === 'abc123') {
 		  res.sendStatus(200).write(req.body["hub.challenge"]).end();
-		  //res.sendStatus(200).type('json').write("flerpyderp arggggggggggg").end();
+	  }else if(!req.body["hub.verify_token"]){
+		  res.sendStatus(200).write(req.body["hub.challenge"]).end();
 	  }else{
 		  res.sendStatus(400).end();
 	  }

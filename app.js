@@ -111,7 +111,7 @@ app.use(function(req, res) {
   }else if(req.path.includes("blog")){
     res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
   }else if(req.path.includes("webhook.php")){
-	res.sendFile('webhook.php');
+	res.sendFile(path.join(__dirname,'webhook.php'));
   }else{
     res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
   }

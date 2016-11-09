@@ -112,9 +112,9 @@ app.use(function(req, res) {
     res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
   }else if(req.path.includes("webhook")){
 	  if (req.body["hub.verify_token"] === 'abc123') {
-		  res.sendStatus(200).write(req.body["hub.challenge"]).end();
+		  res.status(200).send(req.body["hub.challenge"]);
 	  }else if(!req.body["hub.verify_token"]){
-		  res.sendStatus(200).write(req.body["hub.challenge"]).end();
+		  res.status(200).send(req.body["hub.challenge"]);
 	  }else{
 		  res.sendStatus(400).end();
 	  }

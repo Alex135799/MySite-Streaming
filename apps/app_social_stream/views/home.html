@@ -14,14 +14,24 @@
     <div class="col-xs-1 vertical-center text-center" ng-click="vm.prevPic()">
         <span class="glyphicon glyphicon-step-backward"></span>
     </div>
+    <div class="col-xs-10 vertical-center center-block">
+  	  <img class="thumbnail center-block" ng-src="{{vm.fbData.attachment}}"></img>
+    </div>
+    <!--
     <div id="imgDiv" class="col-xs-10">
   	  <img class="thumbnail center-block" ng-src="{{vm.fbPic.source}}"></img>
   	</div>
+  	-->
   	<div class="col-xs-1 vertical-center text-center" ng-click="vm.nextPic()">
   	  <span class="glyphicon glyphicon-step-forward"></span>
   	</div>
   </div>
-  <!-- {{vm.fbPhotoData}} -->
+  <div class="row text-center">
+  	{{vm.fbData.message}}
+  </div>
+  {{vm.fbPhotoData}}
+  
+  
   
   <facebook app-id="213101342444152" />
 </div>

@@ -60,6 +60,9 @@ app.set('view engine', 'jade');
 
 //uglify
 var angularFiles = [
+  'public/javascripts/bootstrap-switch.js',
+  'public/javascripts/angular-toggle-switch.js',
+  'public/javascripts/angular-fullscreen.js',
   'app_client/common/services/service.bowser.js',
   'app_client/app.js',
   'app_client/common/services/service.videoManip.js',

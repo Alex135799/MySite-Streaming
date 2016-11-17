@@ -2,8 +2,8 @@
 	
 	angular.module('mySite').controller('socialCtrl', socialCtrl);
 
-	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$scope", "$window" ]
-	function socialCtrl($routeParams, mySiteData, facebook, $scope, $window) {
+	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$scope", "$window", "Fullscreen", "$q" ]
+	function socialCtrl($routeParams, mySiteData, facebook, $scope, $window, Fullscreen, $q) {
 		var vm = this;
 		
 		vm.fbData;
@@ -13,11 +13,67 @@
 		vm.login = login;
 		vm.nextPic = nextPic;
 		vm.prevPic = prevPic;
+		vm.isFullscreen = false;
+		vm.autoPlay = false;
+		vm.toggleFullScreen = toggleFullScreen;
+		vm.toggleAutoPlay = toggleAutoPlay;
 		var fbPics = [];
 		var groupPics = [];
 		var onData = 0;
 		var onPic = 0;
 		var latestUpdateTime;
+		var theatrePos = angular.element($('#theatre')).prop('offsetTop');
+		var windowHeight = $(window).height();
+		vm.remainingHeight = windowHeight - theatrePos - 100;
+		var canFullscreen = Fullscreen.isSupported();
+		
+		var promise = function (func) {
+			console.log("Promising");
+			var deferred = $q.defer ();
+
+			func (function (response) {
+				if (response && response.error) {
+					deferred.reject (response);
+				} else {
+					deferred.resolve (response);
+				}
+
+				//$rootScope.$apply();
+			});
+
+			return deferred.promise;
+		};
+		
+		function toggleFullScreen() {
+			if(canFullscreen){
+				vm.isFullscreen = !vm.isFullscreen;
+			}else{
+				alert("Your browser does not support this fullscreen, please update your browser.");
+			}
+		}
+		
+		function toggleAutoPlay(){
+			vm.autoPlay = !vm.autoPlay;
+			if(vm.autoPlay){
+				doAutoPlay();
+			}
+		}
+		
+		function doAutoPlay(){
+			var promiseAutoPlay = promise(function(callback) {
+				if(vm.autoPlay){
+					nextPic();
+				}
+				callback();
+			});
+			promiseAutoPlay.then(function(data){
+				if(vm.autoPlay){
+					setTimeout(doAutoPlay, 3000);
+				}
+			}, function(err){
+				alert('FAILED: '+ JSON.stringify(err));
+			})
+		}
 		
 		function updateFeed(feedData, isUpdate){
 			var data = feedData;
@@ -37,22 +93,27 @@
 						var subdata = data[i].attachments.data[0].subattachments.data
 						for(j=0;j<subdata.length;j++){
 							attachmentURL = subdata[j].media.image.src;
-							groupPics.push({"message":message,"attachment":attachmentURL})
+							if(!isUpdate){
+								groupPics.push({"message":message,"attachment":attachmentURL})
+							}else{
+								groupPics.splice(onData+j+1, 0, {"message":message,"attachment":attachmentURL})
+							}
 						}
 					}else{
 						attachmentURL = data[i].attachments.data[0].media.image.src;
-						groupPics.push({"message":message,"attachment":attachmentURL})
+						if(!isUpdate){
+							groupPics.push({"message":message,"attachment":attachmentURL})
+						}else{
+							groupPics.splice(onData+i+1, 0, {"message":message,"attachment":attachmentURL})
+						}
 					}
 				}
 			}
 			vm.fbPhotoData = JSON.stringify(groupPics);
-			if(isUpdate){
-				onData = groupPics.length - j;
-				console.log("LENGTH: "+groupPics.length+"  ONDATA: "+onData);
-				vm.fbData = groupPics[onData];
-			}else{
+			if(isUpdate && !vm.autoPlay){
+				vm.fbData = groupPics[onData+1];
+			}else if(!isUpdate){
 				onData = 0;
-				console.log("LENGTH: "+groupPics.length+"  ONDATA: "+onData);
 				vm.fbData = groupPics[onData];
 			}
 			
@@ -189,6 +250,7 @@
 		
 		$scope.$on('fb.auth.login', function(event, data){
 			vm.fbLoggedIn = true;
+			trollForGroupUpdates();
 		})
 
 		vm.pageHeader = {

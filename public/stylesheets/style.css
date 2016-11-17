@@ -1,5 +1,6 @@
 body {
-  padding: 50px;
+  padding-top: 50px;
+  padding-right: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -55,9 +56,32 @@ video { display: block; }
 
 span.glyphicon-step-backward {
 	font-size: 3em;
+	color: grey;
 }
 
 span.glyphicon-step-forward {
 	font-size: 3em;
+	color: grey;
+}
+
+span.glyphicon-fullscreen {
+	font-size: 2em;
+	color: grey;
+}
+
+#theatre{
+	background-color: #000000;
+	width: 100%;
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-left: 0px;
+	padding-right: 0px;
+}
+
+#fullscreen-glyph {
+    margin: 4px 4px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
 }
 

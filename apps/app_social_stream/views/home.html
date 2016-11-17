@@ -4,34 +4,29 @@
 
 <div id="addvspace"></div>
 
-<div class="container row col-xs-12">
-  <div class="container text-center" ng-hide="vm.fbLoggedIn" >
+<div>
+  <div class="text-center col-xs-12" ng-hide="vm.fbLoggedIn" >
     <button ng-click="vm.login()" class="btn btn-primary">Log In Through FB</button><br />
     <h4>You must do this in order to take advantage of this app.</h4>
   </div>
   
-  <div class="row vertical-center">
+  <div id="theatre" class="col-xs-12 vertical-center center-block" ng-show="vm.fbLoggedIn" style="height: {{vm.remainingHeight}}px;" fullscreen="vm.isFullscreen">
     <div class="col-xs-1 vertical-center text-center" ng-click="vm.prevPic()">
         <span class="glyphicon glyphicon-step-backward"></span>
     </div>
-    <div class="col-xs-10 vertical-center center-block">
-  	  <img class="thumbnail center-block" ng-src="{{vm.fbData.attachment}}"></img>
+    <div class="col-xs-10">
+  	  <img id="FS1" class="vertical-center center-block" ng-src="{{vm.fbData.attachment}}"></img>
     </div>
-    <!--
-    <div id="imgDiv" class="col-xs-10">
-  	  <img class="thumbnail center-block" ng-src="{{vm.fbPic.source}}"></img>
-  	</div>
-  	-->
   	<div class="col-xs-1 vertical-center text-center" ng-click="vm.nextPic()">
   	  <span class="glyphicon glyphicon-step-forward"></span>
   	</div>
+  	<span id="fullscreen-glyph" class="glyphicon glyphicon-fullscreen"  ng-click="vm.toggleFullScreen()"></span>
+  	<!--  <toggle-switch id="autoplay-switch" type="checkbox" ng-click="vm.toggleAutoPlay()" ng-model="switchStatus" /> -->
   </div>
-  <div class="row text-center">
+  <div class="col-xs-12 text-center" ng-show="vm.fbLoggedIn">
+    <button class="btn btn-primary" ng-click="vm.toggleAutoPlay()" >CLICK!</button>
   	{{vm.fbData.message}}
   </div>
   <!-- {{vm.fbPhotoData}} -->
   
-  
-  
-  <facebook app-id="213101342444152" />
 </div>

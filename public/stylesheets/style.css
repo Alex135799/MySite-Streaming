@@ -85,3 +85,10 @@ span.glyphicon-fullscreen {
     position: absolute;
 }
 
+#toggleAutoPlay {
+	margin: 4px 4px;
+    right: 0px;
+    bottom: 0px;
+    position: absolute;
+}
+

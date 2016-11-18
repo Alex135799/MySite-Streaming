@@ -17,23 +17,23 @@ function facebookProvider ($injector) {
 			FB.init(defaultParams);
 
 			this.initialized = true;
-			console.log ("Facebook initialization done.");
+			//console.log ("Facebook initialization done.");
 
 			processPostInitializeQ ();
 		};
 	};
 
 	function executeWhenInitialized (callback, self, args) {
-		console.log ("adding to Q: ", callback);
+		//console.log ("adding to Q: ", callback);
 		Q.push ([callback, self, args]);
 	};
 
 
 	var processPostInitializeQ = function () {
-		console.log ('Processing Q messages.');
+		//console.log ('Processing Q messages.');
 		while (item = Q.shift ()) {
 			
-			console.log("Processing: "+ item[0]);
+			//console.log("Processing: "+ item[0]);
 			
 			func = item[0];
 			self = item[1];
@@ -46,7 +46,7 @@ function facebookProvider ($injector) {
 
 	this.$get = ["$rootScope", "$q",  function ($rootScope, $q) {
 		var promise = function (func) {
-			console.log("Promising");
+			//console.log("Promising");
 			var deferred = $q.defer ();
 
 			func (function (response) {
@@ -63,13 +63,13 @@ function facebookProvider ($injector) {
 		};
 
 		var registerEventHandlers = function () {
-			console.log("Registering Handlers");
+			//console.log("Registering Handlers");
 			$rootScope.$broadcast("fb.init", {});
 			angular.forEach (facebookEvents, function (events, domain) {
-				console.log("There are events: "+ events + ", "+ domain);
+				//console.log("There are events: "+ events + ", "+ domain);
 				angular.forEach (events, function (_event) {
 					var msg = 'fb.' + domain + '.' + _event;
-					console.log("Subscribing: "+ msg);
+					//console.log("Subscribing: "+ msg);
 					FB.Event.subscribe (domain + '.' + _event, function (response) {
 						$rootScope.$broadcast(msg, response);
 					});
@@ -78,7 +78,7 @@ function facebookProvider ($injector) {
 		};
 
 		var login = function (params) {
-			console.log("Executing Login Call");
+			//console.log("Executing Login Call");
 			return promise (function (callback) {
 				FB.login (function (response) {
 					callback (response);
@@ -87,7 +87,7 @@ function facebookProvider ($injector) {
 		}
 		
 		var loginStatus = function() {
-			console.log("Checking Login Status");
+			//console.log("Checking Login Status");
 			return promise (function (callback) {
 				FB.getLoginStatus( function (response) {
 					callback(response);
@@ -96,7 +96,7 @@ function facebookProvider ($injector) {
 		}
 
 		var api = function (path) {
-			console.log("Executing Api Call");
+			//console.log("Executing Api Call");
 			return promise (function (callback) {
 				FB.api (path, function (response) {
 					callback (response);
@@ -105,10 +105,10 @@ function facebookProvider ($injector) {
 		}
 
 		if (!this.initialized) {
-			console.log("Not Initialized")
+			//console.log("Not Initialized")
 			executeWhenInitialized (registerEventHandlers, this, []);
 		} else {
-			console.log("Initialized")
+			//console.log("Initialized")
 			registerEventHandlers ();
 		}
 

@@ -1,0 +1,66 @@
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">BigAl</a>
+      <button type="button" data-toggle="collapse" data-target="#navbar-main" class="navbar-toggle">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div id="navbar-main" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li role="presentation" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            Add Source <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a data-toggle="modal" data-target="#FBModal">Facebook Group</a></li>
+            <li><a>Twitter #</a></li>
+            <li><a>Instagram</a></li>
+          </ul>
+        <li><a href="/about/">About</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FBModal -->
+<div class="modal fade" id="FBModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Add Facebook Group</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="groupId" class="form-control-label">Group ID:</label>
+            <input type="text" class="form-control" id="groupId" ng-model="vm.groupId" ng-change="vm.groupIdChanged()"/>
+          </div>
+          <div class="form-group" ng-show="vm.foundGroup">
+            <label for="groupName" class="form-control-label">Group Name:</label>
+            <input type="text" class="form-control" id="groupName" ng-model="vm.groupName"/>
+          </div>
+          <div class="form-group" ng-show="vm.groupPic && vm.foundGroup">
+            <label for="groupPic" class="form-control-label">Group Photo:</label>
+            <!-- <img id="FS1" class="vertical-center center-block" ng-src="{{vm.groupPic}}" 
+                 style="max-height: {{vm.remainingHeight}}px; max-width: {{vm.remainingWidth}}px;"></img> -->
+            <img id="groupPic" class="img-thumbnail vertical-center center-block" ng-src="{{vm.groupPic}}"></img>
+          </div>
+        </form>
+        <div class="alert alert-danger" ng-show="vm.groupErr">
+          <p>{{vm.groupErr}}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" ng-hide="vm.foundGroup" ng-click="vm.findGroup()">Search Group</button>
+        <button type="button" class="btn btn-primary" ng-show="vm.foundGroup">Add Group</button>
+      </div>
+    </div>
+  </div>
+</div>

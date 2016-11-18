@@ -1,5 +1,7 @@
 <facebook app-id="213101342444152"></facebook>
 
+<navbar></navbar>
+
 <page-header content="vm.pageHeader"></page-header>
 
 <div id="addvspace"></div>
@@ -11,21 +13,23 @@
   </div>
   
   <div id="theatre" class="col-xs-12 vertical-center center-block" ng-show="vm.fbLoggedIn" style="height: {{vm.remainingHeight}}px;" fullscreen="vm.isFullscreen">
-    <div class="col-xs-1 vertical-center text-center" ng-click="vm.prevPic()">
-        <span class="glyphicon glyphicon-step-backward"></span>
+    <div class="col-xs-1 vertical-center text-center">
+        <span class="glyphicon glyphicon-step-backward" ng-click="vm.prevPic()"></span>
     </div>
     <div class="col-xs-10">
-  	  <img id="FS1" class="vertical-center center-block" ng-src="{{vm.fbData.attachment}}"></img>
+  	  <img id="FS1" class="vertical-center center-block" ng-src="{{vm.fbData.attachment}}" style="max-height: {{vm.remainingHeight}}px;"></img>
     </div>
-  	<div class="col-xs-1 vertical-center text-center" ng-click="vm.nextPic()">
-  	  <span class="glyphicon glyphicon-step-forward"></span>
+  	<div class="col-xs-1 vertical-center text-center">
+  	  <span class="glyphicon glyphicon-step-forward" ng-click="vm.nextPic()"></span>
   	</div>
-  	<span id="fullscreen-glyph" class="glyphicon glyphicon-fullscreen"  ng-click="vm.toggleFullScreen()"></span>
-  	<!--  <toggle-switch id="autoplay-switch" type="checkbox" ng-click="vm.toggleAutoPlay()" ng-model="switchStatus" /> -->
+  	<span id="fullscreen-glyph" class="glyphicon glyphicon-fullscreen"  ng-click="vm.toggleFullScreen()" ng-hide="vm.isFullscreen"></span>
+  	<span id="fullscreen-glyph" class="glyphicon glyphicon-resize-small"  ng-click="vm.toggleFullScreen()" ng-show="vm.isFullscreen"></span>
+  	<a ng-click="vm.toggleAutoPlay()">
+      <toggle-switch id="toggleAutoPlay" ng-model="vm.switchState" knob-label="Auto"></toggle-switch>
+    </a>
   </div>
   <div class="col-xs-12 text-center" ng-show="vm.fbLoggedIn">
-    <button class="btn btn-primary" ng-click="vm.toggleAutoPlay()" >CLICK!</button>
-  	{{vm.fbData.message}}
+    {{vm.fbData.message}}
   </div>
   <!-- {{vm.fbPhotoData}} -->
   

@@ -1,6 +1,6 @@
 (function() {
 	
-	angular.module('mySocialStream',[ 'bnx.module.facebook', 'ui.bootstrap', 'ngRoute', 'ngTouch', 'FSAngular', 'toggle-switch' ])
+	angular.module('mySocialStream',[ 'bnx.module.facebook', 'ui.bootstrap', 'ngRoute' ])
 	  .value('bowser', bowser);
 
 	function config($routeProvider, $locationProvider) {

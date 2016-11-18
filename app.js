@@ -60,7 +60,7 @@ app.set('view engine', 'jade');
 
 //uglify
 var angularFiles = [
-  'public/javascripts/bootstrap-switch.js',
+  //'public/javascripts/bootstrap-switch.js',
   'public/javascripts/angular-toggle-switch.js',
   'public/javascripts/angular-fullscreen.js',
   'app_client/common/services/service.bowser.js',
@@ -84,6 +84,7 @@ var angularFiles = [
   'apps/app_social_stream/app.js',
   'apps/app_social_stream/directives/facebookLogin.directive.js',
   'apps/app_social_stream/directives/facebook.directive.js',
+  'apps/app_social_stream/directives/navbar.directive.js',
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
 fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){

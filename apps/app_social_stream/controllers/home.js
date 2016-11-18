@@ -2,8 +2,8 @@
 	
 	angular.module('mySite').controller('socialCtrl', socialCtrl);
 
-	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$scope", "$window", "Fullscreen", "$q" ]
-	function socialCtrl($routeParams, mySiteData, facebook, $scope, $window, Fullscreen, $q) {
+	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$rootScope", "$window", "Fullscreen", "$q" ]
+	function socialCtrl($routeParams, mySiteData, facebook, $rootScope, $window, Fullscreen, $q) {
 		var vm = this;
 		
 		vm.fbData;
@@ -28,7 +28,6 @@
 		var canFullscreen = Fullscreen.isSupported();
 		
 		var promise = function (func) {
-			console.log("Promising");
 			var deferred = $q.defer ();
 
 			func (function (response) {
@@ -120,7 +119,7 @@
 		}
 		
 		function trollForGroupUpdates(){
-			console.log("TROLLING......");
+			//console.log("TROLLING......");
 			var promiseApi = facebook.api('/1612692632367704?fields=feed{created_time,message,story,attachments}')
 			promiseApi.then(function(data){
 				latestGroupUpdateTime = moment(data.feed.data[0].created_time);
@@ -135,7 +134,7 @@
 						updateFeed(updates, true);
 						latestUpdateTime = latestGroupUpdateTime;
 					}else{
-						console.log("No Updates");
+						//console.log("No Updates");
 					}
 				}else{
 					var updates = [];
@@ -230,7 +229,7 @@
 		}
 		
 		//calls getPics ^^ or login ^
-		$scope.$on('fb.init', function (event, data){
+		$rootScope.$on('fb.init', function (event, data){
 			console.log("Event: "+JSON.stringify(data));
 			var promiseLoginStatus = facebook.loginStatus();
 			
@@ -248,7 +247,7 @@
 			
 		})
 		
-		$scope.$on('fb.auth.login', function(event, data){
+		$rootScope.$on('fb.auth.login', function(event, data){
 			vm.fbLoggedIn = true;
 			trollForGroupUpdates();
 		})

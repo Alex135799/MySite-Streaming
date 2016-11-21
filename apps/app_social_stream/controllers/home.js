@@ -2,8 +2,8 @@
 	
 	angular.module('mySite').controller('socialCtrl', socialCtrl);
 
-	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$rootScope", "$window", "Fullscreen", "$q" ]
-	function socialCtrl($routeParams, mySiteData, facebook, $rootScope, $window, Fullscreen, $q) {
+	socialCtrl.$inject = [ "$routeParams", "mySiteData", "facebook", "$rootScope", "$window", "Fullscreen", "$q", "authentication" ]
+	function socialCtrl($routeParams, mySiteData, facebook, $rootScope, $window, Fullscreen, $q, authentication) {
 		var vm = this;
 		
 		vm.fbData;
@@ -152,16 +152,19 @@
 		
 		function findRightSizePic(arrOfPics){
 			var i;
-			var width = document.getElementById('imgDiv').clientWidth - 40;
-			for(i=0;i<arrOfPics.length;i++){
-				console.log("width: "+arrOfPics[i].width+" Page W: "+width);
-				if(arrOfPics[i].width > width){
-					continue;
-				}else{
-					return arrOfPics[i];
+			if(document.getElementById('imgDiv')){
+				var width = document.getElementById('imgDiv').clientWidth - 40;
+				for(i=0;i<arrOfPics.length;i++){
+					console.log("width: "+arrOfPics[i].width+" Page W: "+width);
+					if(arrOfPics[i].width > width){
+						continue;
+					}else{
+						return arrOfPics[i];
+					}
 				}
+				return arrOfPics[i];
 			}
-			return arrOfPics[i];
+			return "";
 		}
 		
 		function nextPic(){
@@ -248,6 +251,28 @@
 		})
 		
 		$rootScope.$on('fb.auth.login', function(event, data){
+            var promiseUserApi = facebook.api('/me/?fields=email,name,id');
+            
+            if(!authentication.isLoggedIn()){
+            	promiseUserApi.then(function(data){
+            		var creds = {screenname:data.name, username:data.id, email:data.email, password:data.id};
+            		authentication
+            		.login(creds)
+            		.error(function(err){
+            			authentication
+            			.register(creds)
+            			.then(function() {
+            				console.log("Registered")
+            			});
+            		})
+            		.then(function(){
+            			console.log("Logged In")
+            		});
+            	}, function(err){
+            		alert('FAILED: '+ JSON.stringify(err));
+            	})
+            }
+            
 			vm.fbLoggedIn = true;
 			trollForGroupUpdates();
 		})

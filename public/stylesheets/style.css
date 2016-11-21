@@ -30,8 +30,8 @@ video { display: block; }
   text-align: center;
 }
 .vertical-center {
-  min-height: 65%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 65vh; /* These two lines are counted as one :-)       */
+  /*min-height: 65%;   Fallback for browsers do NOT support vh unit */
+  /*min-height: 65vh;  These two lines are counted as one :-)       */
   display: flex;
   align-items: center;
 }
@@ -48,6 +48,10 @@ video { display: block; }
   .col-md-4
   .col-sm-6
   .col-xs-12
+}
+
+#app-window{
+	margin-top: 20px;
 }
 
 .photoShow{
@@ -67,6 +71,18 @@ span.glyphicon-step-forward {
 span.glyphicon-fullscreen {
 	font-size: 2em;
 	color: grey;
+}
+
+span.glyphicon-resize-small {
+	font-size: 2em;
+	color: grey;
+}
+
+#authBtns{
+	margin: 4px 4px;
+    right: 50px;
+    top: 40px;
+    position: absolute;
 }
 
 #theatre{

@@ -8,7 +8,7 @@
   function registerCtrl($location, authentication) {
     var vm = this;
     vm.pageHeader = { title: 'Create a new account for mySite' };
-    vm .credentials = {
+    vm.credentials = {
       screenname: "",
       username: "",
       email: "",

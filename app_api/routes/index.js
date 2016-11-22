@@ -23,5 +23,7 @@ router.delete('/event/:eventid', auth, ctrlEvents.eventsDeleteOne);
 //authentication
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
+router.post('/addfb', ctrlAuth.addfb);
+router.post('/updpref', ctrlAuth.updatePreferences);
 
 module.exports = router;

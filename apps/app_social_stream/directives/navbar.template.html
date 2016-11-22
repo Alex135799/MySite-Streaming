@@ -12,13 +12,24 @@
       <ul class="nav navbar-nav navbar-right">
         <li role="presentation" class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+            FB Groups <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" >
+            <li ng-repeat="groupName in vm.user.preferences.fbGroupNames">
+              <p>{{groupName}}</p>
+            </li>
+          </ul>
+        </li>
+        <li role="presentation" class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Add Source <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
             <li><a data-toggle="modal" data-target="#FBModal" href="#">Facebook Group</a></li>
-            <li><a>Twitter #</a></li>
-            <li><a>Instagram</a></li>
+            <li><a data-toggle="modal" data-target="#NotImplementedModal" href="#">Twitter #</a></li>
+            <li><a data-toggle="modal" data-target="#NotImplementedModal" href="#">Instagram</a></li>
           </ul>
+        </li>
         <li><a href="/about/">About</a></li>
       </ul>
     </div>
@@ -59,7 +70,29 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="button" class="btn btn-primary" ng-hide="vm.foundGroup" ng-click="vm.findGroup()">Search Group</button>
-        <button type="button" class="btn btn-primary" ng-show="vm.foundGroup">Add Group</button>
+        <button type="button" class="btn btn-primary" ng-show="vm.foundGroup" ng-click="vm.addGroup()">Add Group</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NotImplementedModal -->
+<div class="modal fade" id="NotImplementedModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title" id="myModalLabel">Working on it!</h4>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger">
+          <p>This feature is not yet implemented.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

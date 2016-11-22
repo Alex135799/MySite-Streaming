@@ -47,3 +47,75 @@ module.exports.login = function(req, res) {
     }
   })(req, res);
 };
+
+module.exports.addfb = function(req, res) {
+	if(!req.body.id) {
+		sendJSONresponse(res, 400, { "message": "id required" });
+		return;
+	}else if (!req.body.name){
+		sendJSONresponse(res, 400, { "message": "name required" });
+		return;
+	}else if (!req.body.fbemail){
+		sendJSONresponse(res, 400, { "message": "fbemail required" });
+		return;
+	}else if (!req.body.email){
+		sendJSONresponse(res, 400, { "message": "email required" });
+		return;
+	}
+	User.findOne({ email: req.body.email }, function(err, user) {
+		var token;
+		if (err) {
+			sendJSONresponse(res, 404, err);
+			return;
+		}
+		if (user) {
+			user.fbid = req.body.id;
+			user.fbname = req.body.name;
+			user.fbemail = req.body.fbemail;
+			//console.log("Saving: "+JSON.stringify(user));
+			user.save(function(err) {
+				var token;
+				if(err) {
+					sendJSONresponse(res, 404, err);
+				} else {
+					token = user.generateJwt();
+					sendJSONresponse(res, 200, { "token": token });
+				}
+			});
+		} else {
+			sendJSONresponse(res, 401, info);
+		}
+	})(req, res);
+};
+
+module.exports.updatePreferences = function(req, res) {
+	if(!req.body.preferences) {
+		sendJSONresponse(res, 400, { "message": "preferences required" });
+		return;
+	}else if (!req.body.email){
+		sendJSONresponse(res, 400, { "message": "email required" });
+		return;
+	}
+	User.findOne({ email: req.body.email }, function(err, user) {
+		var token;
+		if (err) {
+			sendJSONresponse(res, 404, err);
+			return;
+		}
+		if (user) {
+			user.preferences = req.body.preferences;
+			//console.log("Saving: "+JSON.stringify(user));
+			user.save(function(err) {
+				var token;
+				if(err) {
+					sendJSONresponse(res, 404, err);
+				} else {
+					token = user.generateJwt();
+					sendJSONresponse(res, 200, { "token": token });
+				}
+			});
+		} else {
+			sendJSONresponse(res, 401, info);
+		}
+	})(req, res);
+};

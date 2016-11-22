@@ -37,10 +37,15 @@
       if(isLoggedIn()){
         var token = getToken();
         var payload = JSON.parse($window.atob(token.split('.')[1]));
+        //console.log("Payload: "+JSON.stringify(payload));
         return {
           email : payload.email,
           name : payload.name,
-          screenname : payload.screenname
+          screenname : payload.screenname,
+          fbid : payload.fbid,
+          fbname : payload.fbname,
+          fbemail : payload.fbemail,
+          preferences : payload.preferences,
         };
       }
     };
@@ -91,6 +96,19 @@
                email.indexOf('.') > 0 && email.indexOf('.') < email.length &&
                domains.indexOf(email.split('@')[1]) > -1); 
     };
+    var addFB = function(user){
+      //console.log("ADDING FB: "+JSON.stringify(user))
+      return $http.post('/api/addfb', user).success(function(data) {
+    	$window.localStorage.removeItem('mySite-token');
+        saveToken(data.token);
+      });
+    }
+    var updatePreferences = function(user){
+    	return $http.post('/api/updpref', user).success(function(data) {
+    		$window.localStorage.removeItem('mySite-token');
+    		saveToken(data.token);
+    	});
+    }
     return {
       saveToken : saveToken,
       getToken : getToken,
@@ -99,7 +117,9 @@
       logout : logout,
       isLoggedIn : isLoggedIn,
       currentUser : currentUser,
-      isEmail : isEmail
+      isEmail : isEmail,
+      addFB : addFB,
+      updatePreferences : updatePreferences,
     };
   }
 })();

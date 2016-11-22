@@ -17,10 +17,12 @@
 		vm.autoPlay = false;
 		vm.toggleFullScreen = toggleFullScreen;
 		vm.toggleAutoPlay = toggleAutoPlay;
+		vm.user = authentication.currentUser();
+		var globalPics = [];
+		var globalOn = 0;
 		var fbPics = [];
 		var groupPics = [];
-		var onData = 0;
-		var onPic = 0;
+		var onData = [];
 		var latestUpdateTime;
 		var theatrePos = angular.element($('#theatre')).prop('offsetTop');
 		var windowHeight = $(window).height();
@@ -74,80 +76,108 @@
 			})
 		}
 		
-		function updateFeed(feedData, isUpdate){
+		function updateFeed(feedData, isUpdate, numGroups){
 			var data = feedData;
-			var j = 1;
-			for(i=0;i<data.length;i++){
-				var message = "";
-				var post;
-				var attachmentURL;
-				if(!data[i].message && data[i].story){
-					message = data[i].story;
-				}else{
-					message = data[i].message;
+			
+			if(!isUpdate){
+				while(groupPics.length < numGroups){
+					groupPics.push([]);
+					onData.push(0);
 				}
-				if(data[i].attachments != null){
-					if(data[i].attachments.data[0].subattachments != null){
-					//if(data[i].attachments.data[0].subattachments.data[0].media){
-						var subdata = data[i].attachments.data[0].subattachments.data
-						for(j=0;j<subdata.length;j++){
-							attachmentURL = subdata[j].media.image.src;
-							if(!isUpdate){
-								groupPics.push({"message":message,"attachment":attachmentURL})
+				var index;
+				for(index=0;index<numGroups;index++){
+					if(onData[index]==0){
+						break;
+					}
+				}
+				for(i=0;i<data.length;i++){
+					var message = "";
+					var post;
+					var attachmentURL;
+					if(!data[i].message && data[i].story){
+						message = data[i].story;
+					}else{
+						message = data[i].message;
+					}
+					if(data[i].attachments != null){
+						if(data[i].attachments.data[0].subattachments != null){
+							//if(data[i].attachments.data[0].subattachments.data[0].media){
+							var subdata = data[i].attachments.data[0].subattachments.data
+							for(j=0;j<subdata.length;j++){
+								if(subdata[j].media){
+									attachmentURL = subdata[j].media.image.src;
+									if(!isUpdate){
+										groupPics[index].push({"message":message,"attachment":attachmentURL})
+									}else{
+										groupPics[index].splice(onData+j+1, 0, {"message":message,"attachment":attachmentURL})
+									}
+								}else{
+									continue;
+								}
+							}
+						}else{
+							if(data[i].attachments.data[0].media){
+								attachmentURL = data[i].attachments.data[0].media.image.src;
 							}else{
-								groupPics.splice(onData+j+1, 0, {"message":message,"attachment":attachmentURL})
+								//This makes no media posts not show up!
+								continue;
+							}
+							if(!isUpdate){
+								groupPics[index].push({"message":message,"attachment":attachmentURL})
+							}else{
+								groupPics[index].splice(onData+i+1, 0, {"message":message,"attachment":attachmentURL})
 							}
 						}
-					}else{
-						attachmentURL = data[i].attachments.data[0].media.image.src;
-						if(!isUpdate){
-							groupPics.push({"message":message,"attachment":attachmentURL})
-						}else{
-							groupPics.splice(onData+i+1, 0, {"message":message,"attachment":attachmentURL})
-						}
 					}
 				}
+				vm.fbPhotoData = JSON.stringify(groupPics[index]);
+				if(isUpdate && !vm.autoPlay){
+					vm.fbData = groupPics[index][onData[index]+1];
+				}else if(!isUpdate){
+					vm.fbData = groupPics[index][onData[index]];
+				}
 			}
-			vm.fbPhotoData = JSON.stringify(groupPics);
-			if(isUpdate && !vm.autoPlay){
-				vm.fbData = groupPics[onData+1];
-			}else if(!isUpdate){
-				onData = 0;
-				vm.fbData = groupPics[onData];
-			}
-			
+
 		}
-		
-		function trollForGroupUpdates(){
+		function trollForGroupsUpdates(){
 			//console.log("TROLLING......");
-			var promiseApi = facebook.api('/1612692632367704?fields=feed{created_time,message,story,attachments}')
-			promiseApi.then(function(data){
-				latestGroupUpdateTime = moment(data.feed.data[0].created_time);
-				if(latestUpdateTime){
-					if(latestUpdateTime.diff(latestGroupUpdateTime) < 0){
-						var updates = [];
-						var ind = 0;
-						while(latestUpdateTime.diff(moment(data.feed.data[ind].created_time)) < 0){
-							updates.push(data.feed.data[ind]);
-							ind = ind + 1;
+			if(vm.user.preferences && vm.user.preferences.fbGroupIds){
+				var numGroups = vm.user.preferences.fbGroupIds.length;
+				for(groupInd=0; groupInd<numGroups; groupInd++ ){
+					var groupId = vm.user.preferences.fbGroupIds[groupInd];
+					console.log("API: "+'/'+groupId+'?fields=feed{created_time,message,story,attachments}')
+					var promiseApi = facebook.api('/'+groupId+'?fields=feed{created_time,message,story,attachments}')
+					promiseApi.then(function(data){
+						latestGroupUpdateTime = moment(data.feed.data[0].created_time);
+						if(latestUpdateTime){
+							if(latestUpdateTime.diff(latestGroupUpdateTime) < 0){
+								var updates = [];
+								var ind = 0;
+								while(latestUpdateTime.diff(moment(data.feed.data[ind].created_time)) < 0){
+									updates.push(data.feed.data[ind]);
+									ind = ind + 1;
+								}
+								updateFeed(updates, true, numGroups);
+								latestUpdateTime = latestGroupUpdateTime;
+							}else{
+								//console.log("No Updates");
+							}
+						}else{
+							var updates = [];
+							for(i=data.feed.data.length-1;i>=0;i--){
+								updates.push(data.feed.data[i]);
+							}
+							updateFeed(updates, false, numGroups);
+							latestUpdateTime = latestGroupUpdateTime;
 						}
-						updateFeed(updates, true);
-						latestUpdateTime = latestGroupUpdateTime;
-					}else{
-						//console.log("No Updates");
-					}
-				}else{
-					var updates = [];
-					for(i=data.feed.data.length-1;i>=0;i--){
-						updates.push(data.feed.data[i]);
-					}
-					updateFeed(updates, false);
-					latestUpdateTime = latestGroupUpdateTime;
+						setTimeout(trollForGroupsUpdates, 60000);
+					}, function(err){
+						alert('FAILED: '+ JSON.stringify(err));
+					})
 				}
-				setTimeout(trollForGroupUpdates, 60000);
-			}, function(err){
-				alert('FAILED: '+ JSON.stringify(err));
-			})
+			}else{
+				vm.err = "Please add social media source."
+			}
 		}
 		
 		function findRightSizePic(arrOfPics){
@@ -168,37 +198,44 @@
 		}
 		
 		function nextPic(){
-			onPic = onPic + 1;
-			onData = onData + 1;
-			if(groupPics.length <= onData){
-				onData = 0;
-			}
-			vm.fbData = groupPics[onData];
-			/*if(fbPics.length >= onPic){
-				populatePic(fbPics);
+			console.log("GolbalON: "+globalOn)
+			console.log(JSON.stringify(globalPics))
+			if(globalPics.length > globalOn+1){
+				vm.fbData = globalPics[globalOn+1]
+				globalOn++;
 			}else{
-				onPic = onPic - 1;
-				console.log("length: "+fbPics.length+" onPic: "+onPic);
-			}*/
+				globalPics[globalOn] = vm.fbData;
+				globalOn++;
+				console.log(JSON.stringify(onData))
+				groupInd = Math.floor(Math.random() * (onData.length));
+				console.log("RAND: "+groupInd)
+				onData[groupInd] = onData[groupInd] + 1;
+				if(groupPics[groupInd].length <= onData[groupInd]){
+					onData[groupInd] = 0;
+				}
+				vm.fbData = groupPics[groupInd][onData[groupInd]];
+			}
+			
 		}
 		
 		function prevPic(){
-			onPic = onPic - 1;
-			onData = onData -1;
-			if(onData < 0){
-				onData = groupPics.length - 1;
-			}
-			vm.fbData = groupPics[onData];
-			/*if(onPic >= 0){
-				populatePic(fbPics);
+			console.log("GolbalON: "+globalOn)
+			if(globalOn != 0){
+				if(globalPics.length > globalOn){
+					vm.fbData = globalPics[globalOn-1]
+					globalOn--;
+				}else{
+					globalPics[globalOn] = vm.fbData;
+					vm.fbData = globalPics[globalOn-1]
+					globalOn--;
+				}
 			}else{
-				onPic = onPic + 1;
-				console.log("onPic: "+onPic);
-			}*/
+				vm.err = "cannot go back further";
+			}
 		}
 		
 		function populatePic(fbPics){
-			var promisePhotoApi = facebook.api('/'+fbPics[onPic].id+'?fields=images');
+			var promisePhotoApi = facebook.api('/'+fbPics[onData].id+'?fields=images');
 			
 			promisePhotoApi.then(function(data){
 				vm.fbPic = findRightSizePic(data.images);
@@ -239,7 +276,13 @@
 			promiseLoginStatus.then(function(data){
 				if(data.status === 'connected'){
 					vm.fbLoggedIn = true;
-					trollForGroupUpdates();
+					
+					var user = authentication.currentUser();
+		            if(authentication.isLoggedIn() && !user.fbid){
+		            	addFBtoLogin(user);
+		            }
+		            
+					trollForGroupsUpdates();
 					//getPics();
 				}else{
 					vm.fbLoggedIn = false;
@@ -250,31 +293,38 @@
 			
 		})
 		
+		function addFBtoLogin(user){
+			var promiseUserApi = facebook.api('/me/?fields=email,name,id');
+        	promiseUserApi.then(function(data){
+        		var creds = {name:data.name, id:data.id, fbemail:data.email, email:user.email};
+        		authentication
+        		.addFB(creds)
+        		.error(function(err){
+        			console.log(err)
+        		})
+        		.then(function(){
+        			console.log("Added FB");
+        			vm.user = authentication.currentUser();
+                    //console.log("New User: "+JSON.stringify(user));
+        		});
+        	}, function(err){
+        		alert('FAILED: '+ JSON.stringify(err));
+        	})
+		}
+		
 		$rootScope.$on('fb.auth.login', function(event, data){
-            var promiseUserApi = facebook.api('/me/?fields=email,name,id');
+            var user = authentication.currentUser();
             
-            if(!authentication.isLoggedIn()){
-            	promiseUserApi.then(function(data){
-            		var creds = {screenname:data.name, username:data.id, email:data.email, password:data.id};
-            		authentication
-            		.login(creds)
-            		.error(function(err){
-            			authentication
-            			.register(creds)
-            			.then(function() {
-            				console.log("Registered")
-            			});
-            		})
-            		.then(function(){
-            			console.log("Logged In")
-            		});
-            	}, function(err){
-            		alert('FAILED: '+ JSON.stringify(err));
-            	})
+            if(authentication.isLoggedIn() && !user.fbid){
+            	addFBtoLogin(user);
             }
             
 			vm.fbLoggedIn = true;
-			trollForGroupUpdates();
+			trollForGroupsUpdates();
+		})
+		
+		$rootScope.$on('UpdatedPreferences', function(event, data){
+            vm.user = authentication.currentUser();
 		})
 
 		vm.pageHeader = {

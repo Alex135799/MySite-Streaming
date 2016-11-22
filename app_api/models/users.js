@@ -18,7 +18,23 @@ var userSchema = new mongoose.Schema({
     required: true
   },
   hash: String,
-  salt: String
+  salt: String,
+  fbid: {
+	type: Number,
+	required: false
+  },
+  fbname: {
+	type: String,
+	required: false
+  },
+  fbemail: {
+	type: String,
+	required: false
+  },
+  preferences: {
+	  fbGroupIds: [{type: Number, required: false}],
+	  fbGroupNames: [{type: String, required: false}],
+  }
 });
 
 userSchema.methods.setPassword = function(password){
@@ -40,6 +56,10 @@ userSchema.methods.generateJwt = function() {
     email: this.email,
     username: this.username,
     screenname: this.screenname,
+    fbid: this.fbid,
+    fbname: this.fbname,
+    fbemail: this.fbemail,
+    preferences: this.preferences,
     exp: parseInt(expiry.getTime()/1000),
   }, process.env.JWT_SECRET );
 };

@@ -36,7 +36,7 @@
 	function socialCtrlNavbar(facebook, authentication, $rootScope) {
 		var vm = this;
 		
-		vm.user = authentication.currentUser();
+		vm.user = authentication.currentUser() || {};
 		vm.foundGroup = false;
 		vm.groupId = 1612692632367704;
 		vm.findGroup = findGroup;
@@ -92,19 +92,25 @@
 				vm.user.preferences.fbGroupIds.push(vm.groupId);
 				vm.user.preferences.fbGroupNames.push(vm.groupName);
 			}
-			var creds = {preferences:vm.user.preferences, email:vm.user.email};
-			authentication
-			.updatePreferences(creds)
-			.error(function(err){
-				vm.groupErr = err;
-			})
-			.then(function(){
-				$rootScope.$broadcast("UpdatedPreferences", {});
+			if(authentication.isLoggedIn()){
+				var creds = {preferences:vm.user.preferences, email:vm.user.email};
+				authentication
+				.updatePreferences(creds)
+				.error(function(err){
+					vm.groupErr = err;
+				})
+				.then(function(){
+					console.log("Updated Preferences");
+					vm.user = authentication.currentUser();
+					$rootScope.$broadcast("UpdatedPreferences", vm.user);
+					$('#FBModal').modal('hide');
+					//console.log("New User: "+JSON.stringify(user));
+				});
+			}else{
 				console.log("Updated Preferences");
-				vm.user = authentication.currentUser();
-				$('#FBModal').modal('hide');
-				//console.log("New User: "+JSON.stringify(user));
-			});
+				$rootScope.$broadcast("UpdatedPreferences", vm.user);
+			}
+			$('#FBModal').modal('hide');
 		}
 	}
 

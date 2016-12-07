@@ -17,7 +17,7 @@
 		vm.autoPlay = false;
 		vm.toggleFullScreen = toggleFullScreen;
 		vm.toggleAutoPlay = toggleAutoPlay;
-		vm.user = authentication.currentUser();
+		vm.user = authentication.currentUser() || {};
 		var globalPics = [];
 		var globalOn = 0;
 		var fbPics = [];
@@ -176,7 +176,7 @@
 					})
 				}
 			}else{
-				vm.err = "Please add social media source."
+				console.log("Please add social media source.")
 			}
 		}
 		
@@ -281,8 +281,9 @@
 		            if(authentication.isLoggedIn() && !user.fbid){
 		            	addFBtoLogin(user);
 		            }
-		            
-					trollForGroupsUpdates();
+		            if(vm.user.preferences){
+		            	trollForGroupsUpdates();
+		            }
 					//getPics();
 				}else{
 					vm.fbLoggedIn = false;
@@ -324,7 +325,13 @@
 		})
 		
 		$rootScope.$on('UpdatedPreferences', function(event, data){
-            vm.user = authentication.currentUser();
+			if(!vm.user.preferences){
+				vm.user = data;
+				trollForGroupsUpdates();
+			}else{
+				vm.user = data;
+			}
+            //vm.user = authentication.currentUser();
 		})
 
 		vm.pageHeader = {

@@ -1,0 +1,32 @@
+<navbar></navbar>
+
+<page-header content="vm.pageHeader"></page-header>
+
+<div id="addvspace"></div>
+
+<div class="container">
+	<form class="col-sm-12">
+		<div class="form-group col-sm-4">
+			<label for="ticketType">Tracked in:</label>
+			<select class="form-control" id="ticketType" ng-model="vm.ticketType" 
+					ng-options="type for type in vm.ticketTypes" ng-change="vm.changeTicketType()"></select>
+		</div>
+		<div class="form-group col-sm-4">
+			<label for="storyNum">Story Number:</label>
+			<input class="form-control" id="storyNum" type="text" placeholder="Story Number"></input>
+		</div>
+		<div class="col-sm-4" ng-show="vm.loading">
+			<h3 id="loading">Loading Ticket Data...</h3>
+			<div class="progress progress-striped active"><div class="progress-bar" style="width: 100%"></div></div>
+		</div>
+		<div class="form-group col-sm-12" ng-show="vm.loaded">
+			<label for="issueDescription">Issue Description:</label>
+			<textarea class="form-control" id="issueDescription" rows="2"></textarea>
+		</div>
+		<div class="form-group col-sm-12">
+			<a class="btn btn-info" ng-click="vm.submit()">Submit</a>
+		</div>
+	</form>
+</div>
+  
+</div>

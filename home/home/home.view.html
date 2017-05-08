@@ -1,0 +1,33 @@
+<div id="authBtns">
+  <div ng-show="vm.isLoggedIn">
+    <h4 class="center-block">Welcome {{ vm.currentUser.screenname }}!!</h4>
+    <button ng-click="vm.logout()" class="btn btn-primary center-block">Log Out</button>
+  </div>
+
+  <div ng-hide="vm.isLoggedIn" class="row-fluid offset-xs-6 col-xs-6">
+    <a href="/login/?page={{ vm.currentPath }}"><button id="login-btn" class="center-block btn btn-primary pull-right">Login</button></a>
+  </div>
+</div>
+
+<page-header content="vm.pageHeader"></page-header>
+
+<div id="addvspace"></div>
+
+<div class="container row col-xs-12">
+  <div class="col-sm-12 container" id="login-eventContainer">
+
+    <div id="app-window" class="row-fluid">
+      <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-xs-12">
+        <a href="/issue" target="_self" >
+          <img src="{{ vm.issueimg }}" class="home_thumbnail img-rounded center-block"></img>
+          <div class="h4 text-center">Issue Tracking</div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container hidden-xs">
+  <img src="{{ vm.img }}" class="full-background"></img>
+</div>
+

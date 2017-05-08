@@ -27,7 +27,6 @@ api.register(function(err, uid) {
 require('./app_api/models/db');
 require('./app_api/config/passport');
 
-var routesFan = require('./app_fantasy/routes/index');
 var routesAPI = require('./app_api/routes/index');
 //var users = require('./routes/users');
 
@@ -55,7 +54,6 @@ if (app.get('env') === 'development') {
 }
 app.listen(8090);
 // view engine setup
-app.set('views', path.join(__dirname, 'app_fantasy', 'views'));
 app.set('view engine', 'jade');
 
 //uglify
@@ -63,31 +61,22 @@ var angularFiles = [
   //'public/javascripts/bootstrap-switch.js',
   'public/javascripts/angular-toggle-switch.js',
   'public/javascripts/angular-fullscreen.js',
-  'app_client/common/services/service.bowser.js',
-  'app_client/app.js',
-  'app_client/common/services/service.videoManip.js',
-  'app_client/common/services/service.detectBrowser.js',
-  'app_client/common/services/service.mySiteData.js',
-  'app_client/common/services/service.authentication.js',
-  'app_client/home/home.controller.js',
-  'app_client/auth/login/login.controller.js',
-  'app_client/auth/register/register.controller.js',
-  'app_client/common/directives/pageHeader/pageHeader.directive.js',
-  'app_client/common/directives/blogList/blogList.directive.js',
-  'app_client/common/directives/background_video/background_video.directive.js',
-  'apps/app_calendar/controllers/home.js',
-  'apps/app_calendar/app.js',
-  'apps/app_blog/controllers/home.js',
-  'apps/app_blog/app.js',
-  'apps/app_social_stream/providers/facebook.js',
-  'apps/app_social_stream/controllers/home.js',
-  'apps/app_social_stream/app.js',
-  'apps/app_social_stream/directives/facebookLogin.directive.js',
-  'apps/app_social_stream/directives/facebook.directive.js',
-  'apps/app_social_stream/directives/navbar.directive.js',
+  'home/common/services/service.bowser.js',
+  'home/app.js',
+  'home/common/services/service.videoManip.js',
+  'home/common/services/service.detectBrowser.js',
+  'home/common/services/service.mySiteData.js',
+  'home/common/services/service.authentication.js',
+  'home/home/home.controller.js',
+  'home/auth/login/login.controller.js',
+  'home/auth/register/register.controller.js',
+  'home/common/directives/pageHeader/pageHeader.directive.js',
+  'apps/issue_tracking/controllers/home.js',
+  'apps/issue_tracking/app.js',
+  'apps/issue_tracking/directives/navbar.directive.js',
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
-fs.writeFile('app_client/lib/mySite.min.js', uglified.code, function (err){
+fs.writeFile('home/lib/mySite.min.js', uglified.code, function (err){
   if(err) {
     console.log(err);
   } else {
@@ -102,36 +91,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'app_client')));
+app.use(express.static(path.join(__dirname, 'home')));
 app.use(express.static(path.join(__dirname, 'apps')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use('/api', routesAPI);
-app.use('/fan', routesFan);
 app.use(function(req, res) {
-  if(req.path.includes("calendar")){
-    res.sendFile(path.join(__dirname, 'apps', 'app_calendar', 'index.html'));
-  }else if(req.path.includes("social")){
-	    res.sendFile(path.join(__dirname, 'apps', 'app_social_stream', 'index.html'));
-  }else if(req.path.includes("blog")){
-    res.sendFile(path.join(__dirname, 'apps', 'app_blog', 'index.html'));
-  }else if(req.path.includes("webhook")){
-	  if (req.body["hub.verify_token"] === 'abc123') {
-		  res.status(200).send(req.body["hub.challenge"]);
-	  }else if(!req.body["hub.verify_token"]){
-		  if(req.body["hub.challenge"]){
-			  res.status(200).send(req.body["hub.challenge"]);
-		  }else if(req.params["hub.challenge"]){
-			  res.status(200).send(req.params["hub.challenge"]);
-		  }else if(req.query["hub.challenge"]){
-			  res.status(200).send(req.query["hub.challenge"]);
-		  }else{
-			  res.sendStatus(400).end();
-		  }
-	  }else{
-		  res.sendStatus(400).end();
-	  }
+  if(req.path.includes("issue")){
+	    res.sendFile(path.join(__dirname, 'apps', 'issue_tracking', 'index.html'));
   }else{
-    res.sendFile(path.join(__dirname, 'app_client', 'index.html'));
+    res.sendFile(path.join(__dirname, 'home', 'index.html'));
   }
 });
 app.use(passport.initialize());

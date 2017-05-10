@@ -9,7 +9,7 @@ var uglifyJs = require('uglify-js');
 var fs = require('fs');
 var passport = require('passport');
 var session = require('express-session');
-var MongoStore = require('connect-mongo')(session);
+var MongoStore = require('connect-mongo/es5')(session);
 /*var gracenote = require('node-gracenote');
 var clientID = "";
 var cleintTag = "";
@@ -96,8 +96,9 @@ app.use(express.static(path.join(__dirname, 'apps')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use('/api', routesAPI);
 app.use(function(req, res) {
-  if(req.path.includes("issue")){
-	    res.sendFile(path.join(__dirname, 'apps', 'issue_tracking', 'index.html'));
+  //if(req.path.includes("issue")){
+  if(req.path.search("/issue/")){
+    res.sendFile(path.join(__dirname, 'apps', 'issue_tracking', 'index.html'));
   }else{
     res.sendFile(path.join(__dirname, 'home', 'index.html'));
   }

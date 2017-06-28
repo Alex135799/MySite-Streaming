@@ -20,7 +20,8 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
 import org.bson.Document;
 import org.bson.json.JsonParseException;
-
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import com.mongodb.spark.MongoSpark;
 import com.mongodb.spark.config.WriteConfig;
 
@@ -38,15 +39,17 @@ public class TwitterMain {
 	    System.setProperty("twitter4j.oauth.consumerSecret", consumerSecret);
 	    System.setProperty("twitter4j.oauth.accessToken", accessToken);
 	    System.setProperty("twitter4j.oauth.accessTokenSecret", accessTokenSecret);
-	    //System.setProperty("twitter4j.http.proxyHost", "www-proxy");
-	    //System.setProperty("twitter4j.http.proxyPort", "80");
-	    //System.setProperty("twitter4j.http.proxyUser", "n0252056");
-	    //System.setProperty("twitter4j.http.proxyPassword", "******");
-	    String user = "Alex";
-	    //String user = "n0252056";
+	    System.setProperty("twitter4j.http.proxyHost", "www-proxy");
+	    System.setProperty("twitter4j.http.proxyPort", "80");
+	    System.setProperty("twitter4j.http.proxyUser", "n0252056");
+	    System.setProperty("twitter4j.http.proxyPassword", "****");
+	    //String user = "Alex";
+	    String user = "n0252056";
 	    
 		SparkConf conf = new SparkConf().setAppName("Top Hash Tags");
 		conf.setMaster("local[2]");
+		conf.set("spark.driver.host", "127.0.0.1");
+		conf.set("spark.driver.port", "1234");
 		conf.set("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.myCollection?readPreference=primaryPreferred");
 		conf.set("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.myCollection");
 		JavaSparkContext ctx = new JavaSparkContext(conf);
@@ -67,7 +70,7 @@ public class TwitterMain {
 		});
 		//Count hashtags
 		//first Duration: size of window to reduce, second Duration: how often to execute
-		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(10 * 1000), new Duration(10 * 1000));
+		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(15 * 1000), new Duration(10 * 1000));
 		//Make the count the Key
 		JavaPairDStream<Long, String> hashtagCountMap = hashtagTextMap.mapToPair(new PairFunction<Tuple2<String, Long>, Long, String>(){
 			private static final long serialVersionUID = 1L;
@@ -114,7 +117,7 @@ public class TwitterMain {
 				}
 			});
 			javadoc = javadoc.filter( doc -> (int)doc.get("id") > 0);
-			javadoc.collect().forEach( doc -> System.out.println(doc));
+			//javadoc.collect().forEach( doc -> System.out.println(doc));
 			//MongoSpark.save(javadoc, writeConf);
 		});
 		

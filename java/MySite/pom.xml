@@ -8,11 +8,16 @@
   <version>1.0</version>
   <name>MySite</name>
   <dependencies>
+    <dependency>
+		<groupId>org.mongodb</groupId>
+		<artifactId>mongo-java-driver</artifactId>
+		<version>3.4.2</version>
+	</dependency>
     <!-- https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector_2.11 -->
     <dependency>
       <groupId>org.mongodb.spark</groupId>
       <artifactId>mongo-spark-connector_2.11</artifactId>
-      <version>1.1.0</version>
+      <version>2.0.0</version>
       <exclusions>
       	<exclusion>
       		<artifactId>servlet-api</artifactId>
@@ -24,19 +29,19 @@
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql_2.11</artifactId>
-      <version>1.6.2</version>
+      <version>2.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-twitter_2.11 -->
     <dependency>
-      <groupId>org.apache.spark</groupId>
+      <groupId>org.apache.bahir</groupId>
       <artifactId>spark-streaming-twitter_2.11</artifactId>
-      <version>1.6.2</version>
+      <version>2.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming_2.11 -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_2.11</artifactId>
-      <version>1.6.2</version>
+      <version>2.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.scala-lang/scala-library -->
     <dependency>

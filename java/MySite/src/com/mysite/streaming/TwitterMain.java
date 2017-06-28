@@ -2,6 +2,7 @@ package com.mysite.streaming;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,9 +21,15 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.twitter.TwitterUtils;
 import org.bson.Document;
 import org.bson.json.JsonParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+
+import com.google.common.base.CharMatcher;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
 import com.mongodb.spark.MongoSpark;
+import com.mongodb.spark.config.ReadConfig;
 import com.mongodb.spark.config.WriteConfig;
 
 import scala.Tuple2;
@@ -42,7 +49,7 @@ public class TwitterMain {
 	    System.setProperty("twitter4j.http.proxyHost", "www-proxy");
 	    System.setProperty("twitter4j.http.proxyPort", "80");
 	    System.setProperty("twitter4j.http.proxyUser", "n0252056");
-	    System.setProperty("twitter4j.http.proxyPassword", "****");
+	    System.setProperty("twitter4j.http.proxyPassword", "9BioChem");
 	    //String user = "Alex";
 	    String user = "n0252056";
 	    
@@ -51,6 +58,7 @@ public class TwitterMain {
 		conf.set("spark.driver.host", "127.0.0.1");
 		conf.set("spark.driver.port", "1234");
 		conf.set("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.myCollection?readPreference=primaryPreferred");
+		//conf.set("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.myCollection");
 		conf.set("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.myCollection");
 		JavaSparkContext ctx = new JavaSparkContext(conf);
 		JavaStreamingContext sctx = new JavaStreamingContext(ctx, new Duration(5 * 1000));
@@ -64,8 +72,8 @@ public class TwitterMain {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public ArrayList<String> call(Status x){
-				return getHashTags(x);
+			public Iterator<String> call(Status x){
+				return getHashTags(x).iterator();
 			}
 		});
 		//Count hashtags
@@ -102,29 +110,55 @@ public class TwitterMain {
 		//TODO: Facebook
 		//https://developers.facebook.com/docs/javascript/quickstart
 		
+		
+		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {
+			System.out.println("NEW RDD");
+			rdd = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
+			JavaRDD<Document> javadoc = rdd.map( pair -> {
+				try{
+					return Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
+				}catch(JsonParseException err){
+					return Document.parse("{name: \"JsonError\",count:0}");
+				}
+			});
+			javadoc = javadoc.filter( doc -> (int)doc.get("count") > 0);
+			javadoc.takeSample(false, 10).forEach( doc -> System.out.println(doc));
+			mongoUpsert(javadoc, ctx);
+			System.out.println("SAVED");
+		});
+		
+		sctx.start();
+		try {
+			sctx.awaitTerminationOrTimeout((long) (60 * 1000));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void mongoUpsert(JavaRDD<Document> javadoc, JavaSparkContext ctx) {
 		Map<String, String> writeOverrides = new HashMap<String, String>();
 		writeOverrides.put("collection", "myCollection");
 		writeOverrides.put("writeConcern.w", "majority");
 		WriteConfig writeConf = WriteConfig.create(ctx).withOptions(writeOverrides);
-		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {
-			System.out.println("NEW RDD");
-			//rdd = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
-			JavaRDD<Document> javadoc = rdd.map( pair -> {
-				try{
-					return Document.parse("{name: \""+pair._2+"\",id: "+pair._1+"}");
-				}catch(JsonParseException err){
-					return Document.parse("{name: \"JsonError\",id:0}");
-				}
-			});
-			javadoc = javadoc.filter( doc -> (int)doc.get("id") > 0);
-			//javadoc.collect().forEach( doc -> System.out.println(doc));
-			//MongoSpark.save(javadoc, writeConf);
-		});
 		
-		sctx.start();
-		sctx.awaitTerminationOrTimeout((long) (60 * 1000));
+		Map<String, String> readOverrides = new HashMap<String, String>();
+	    readOverrides.put("collection", "spark");
+	    readOverrides.put("readPreference.name", "secondaryPreferred");
+	    ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);
+	    
+	    MongoClient mongo = new MongoClient("localhost",27017);
+	    MongoDatabase db = mongo.getDatabase("test");
+	    MongoCollection<Document> col = db.getCollection("myCollection");
+	    
+	    FindOneAndUpdateOptions fo = new FindOneAndUpdateOptions();
+	    fo.upsert(true);
+	    
+	    Document myDoc = col.findOneAndUpdate(Filters.eq("name", "a"), new Document("name", "abc"), fo);
+		
+		MongoSpark.save(javadoc, writeConf);
+		
 	}
-	
+
 	public static ArrayList<String> getHashTags(Status status){
 		Pattern MY_PATTERN = Pattern.compile("#(\\S+)");
 		Matcher mat = MY_PATTERN.matcher(status.getText());

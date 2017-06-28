@@ -24,6 +24,7 @@ import org.bson.json.JsonParseException;
 
 import com.google.common.base.CharMatcher;
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -121,10 +122,15 @@ public class TwitterMain {
 					return Document.parse("{name: \"JsonError\",count:0}");
 				}
 			});
+			MongoClient mongo = new MongoClient("localhost",27017);
+		    MongoDatabase db = mongo.getDatabase("test");
+		    MongoCollection<Document> col = db.getCollection("myCollection");
+		    
 			javadoc = javadoc.filter( doc -> (int)doc.get("count") > 0);
 			javadoc.takeSample(false, 10).forEach( doc -> System.out.println(doc));
-			mongoUpsert(javadoc, ctx);
+			mongoUpsert(javadoc, ctx, col);
 			System.out.println("SAVED");
+			mongo.close();
 		});
 		
 		sctx.start();
@@ -135,8 +141,8 @@ public class TwitterMain {
 		}
 	}
 	
-	private static void mongoUpsert(JavaRDD<Document> javadoc, JavaSparkContext ctx) {
-		Map<String, String> writeOverrides = new HashMap<String, String>();
+	private static void mongoUpsert(JavaRDD<Document> javadoc, JavaSparkContext ctx, MongoCollection<Document> col) {
+		/*Map<String, String> writeOverrides = new HashMap<String, String>();
 		writeOverrides.put("collection", "myCollection");
 		writeOverrides.put("writeConcern.w", "majority");
 		WriteConfig writeConf = WriteConfig.create(ctx).withOptions(writeOverrides);
@@ -144,18 +150,24 @@ public class TwitterMain {
 		Map<String, String> readOverrides = new HashMap<String, String>();
 	    readOverrides.put("collection", "spark");
 	    readOverrides.put("readPreference.name", "secondaryPreferred");
-	    ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);
-	    
-	    MongoClient mongo = new MongoClient("localhost",27017);
-	    MongoDatabase db = mongo.getDatabase("test");
-	    MongoCollection<Document> col = db.getCollection("myCollection");
+	    ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);*/
 	    
 	    FindOneAndUpdateOptions fo = new FindOneAndUpdateOptions();
 	    fo.upsert(true);
 	    
-	    Document myDoc = col.findOneAndUpdate(Filters.eq("name", "a"), new Document("name", "abc"), fo);
-		
-		MongoSpark.save(javadoc, writeConf);
+	    javadoc.foreachAsync( (Document doc) -> {
+	    	
+	    	int prevCount = 0;
+		    FindIterable<Document> toReplaceDoc = col.find(Filters.eq("name", doc.get("name")));
+		    
+		    for(Document docMatched : toReplaceDoc){
+		    	prevCount = docMatched.getInteger("count", 0);
+		    }
+	    	
+	    	col.findOneAndUpdate(Filters.eq("name", doc.get("name")), 
+	    			new Document("$set", new Document("count",doc.getInteger("count",0)+prevCount)), fo);
+	    	
+	    } );
 		
 	}
 

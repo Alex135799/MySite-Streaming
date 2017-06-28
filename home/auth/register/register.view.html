@@ -3,7 +3,7 @@
   <page-header content="vm.pageHeader"></page-header>
   <div class="row">
     <div class="col-md-6 col-sm-12">
-      <p class="lead">Already a member? Please <a href="/#login">Log In</a> instead.</p>
+      <p class="lead visible">Already a member? Please <a href="/#login">Log In</a> instead.</p>
       <form ng-submit="vm.onSubmit()">
         <div role="alert" ng-show="vm.formError" class="alert alert-danger">{{ vm.formError }}</div>
         <div role="alert" ng-show="rcMailgun.mailgunStatus" class="alert alert-danger">{{ rcMailgun.mailgunStatus }}</div>
@@ -23,7 +23,7 @@
           <label for="password">Password</label>
           <input type="password" class="form-control" id="password" placeholder="Password" ng-model="vm.credentials.password">
         </div>
-        <button type="submit" class="btn btn-default">Sign Up!</button>
+        <button type="submit" class="btn btn-default" disabled>Sign Up!</button>
       </form>
     </div>
   </div>

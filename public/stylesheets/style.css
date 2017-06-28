@@ -7,6 +7,9 @@ form label {
 	color: #E5E4E2;
 	font: 14px
 }
+.visible {
+	color: #E5E4E2;
+}
 #title {
 	color: #E5E4E2;
 }

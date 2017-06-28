@@ -3,7 +3,7 @@
   <page-header content="vm.pageHeader"></page-header>
   <div class="row">
     <div class="col-md-6 col-sm-12">
-      <p class="lead">Not a member? Please <a href="/#register?page={{ vm.returnPage }}">Register</a> first.</p>
+      <p class="lead visible">Not a member? Please <a href="/#register?page={{ vm.returnPage }}">Register</a> first.</p>
       <form ng-submit="vm.onSubmit()">
         <div role="alert" ng-show="vm.formError" class="alert alert-danger">{{ vm.formError }}</div>
         <div class="form-group">
@@ -14,7 +14,7 @@
           <label for="password">Password</label>
           <input type="password" class="form-control" id="password" placeholder="Password" ng-model="vm.credentials.password">
         </div>
-        <button type="submit" class="btn btn-default">Sign In!</button>
+        <button type="submit" class="btn btn-default" disabled>Sign In!</button>
       </form>
     </div>
   </div>

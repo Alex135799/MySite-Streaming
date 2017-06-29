@@ -111,26 +111,43 @@ public class TwitterMain {
 		//TODO: Facebook
 		//https://developers.facebook.com/docs/javascript/quickstart
 		
-		
-		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {
-			System.out.println("NEW RDD");
-			rdd = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
-			JavaRDD<Document> javadoc = rdd.map( pair -> {
-				try{
-					return Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
-				}catch(JsonParseException err){
-					return Document.parse("{name: \"JsonError\",count:0}");
+		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {		
+			rdd.foreachPartition( list -> {
+				MongoClient mongo = new MongoClient("localhost",27017);
+				MongoDatabase db = mongo.getDatabase("test");
+				MongoCollection<Document> col = db.getCollection("myCollection");
+				
+				while(list.hasNext()){
+					Tuple2<Long,String> pair = list.next();
+					if(!CharMatcher.ASCII.matchesAllOf(pair._2)){
+						continue;
+					}
+					Document javadoc;
+					try{
+						javadoc = Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
+					}catch(JsonParseException err){
+						javadoc = Document.parse("{name: \"JsonError\",count:0}");
+					}
+					if((int)javadoc.get("count") == 0){
+						continue;
+					}
+					mongoUpsert(javadoc, col);
 				}
+				//JavaPairRDD<Long,String> rddFiltered = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
+				/*JavaRDD<Document> javadoc = rddFiltered.map( pair -> {
+					try{
+						return Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
+					}catch(JsonParseException err){
+						return Document.parse("{name: \"JsonError\",count:0}");
+					}
+				});*/
+
+				/*javadoc = javadoc.filter( doc -> (int)doc.get("count") > 0);
+				javadoc.takeSample(false, 10).forEach( doc -> System.out.println(doc));
+				mongoUpsert(javadoc, col, rddFiltered);*/
+				System.out.println("SAVED");
+				mongo.close();
 			});
-			MongoClient mongo = new MongoClient("localhost",27017);
-		    MongoDatabase db = mongo.getDatabase("test");
-		    MongoCollection<Document> col = db.getCollection("myCollection");
-		    
-			javadoc = javadoc.filter( doc -> (int)doc.get("count") > 0);
-			javadoc.takeSample(false, 10).forEach( doc -> System.out.println(doc));
-			mongoUpsert(javadoc, ctx, col);
-			System.out.println("SAVED");
-			mongo.close();
 		});
 		
 		sctx.start();
@@ -141,7 +158,7 @@ public class TwitterMain {
 		}
 	}
 	
-	private static void mongoUpsert(JavaRDD<Document> javadoc, JavaSparkContext ctx, MongoCollection<Document> col) {
+	private static void mongoUpsert(Document doc, MongoCollection<Document> col) {
 		/*Map<String, String> writeOverrides = new HashMap<String, String>();
 		writeOverrides.put("collection", "myCollection");
 		writeOverrides.put("writeConcern.w", "majority");
@@ -155,7 +172,7 @@ public class TwitterMain {
 	    FindOneAndUpdateOptions fo = new FindOneAndUpdateOptions();
 	    fo.upsert(true);
 	    
-	    javadoc.foreachAsync( (Document doc) -> {
+	    //javadoc.foreachAsync( (Document doc) -> {
 	    	
 	    	int prevCount = 0;
 		    FindIterable<Document> toReplaceDoc = col.find(Filters.eq("name", doc.get("name")));
@@ -165,9 +182,11 @@ public class TwitterMain {
 		    }
 	    	
 	    	col.findOneAndUpdate(Filters.eq("name", doc.get("name")), 
-	    			new Document("$set", new Document("count",doc.getInteger("count",0)+prevCount)), fo);
+	    			new Document("$set", new Document("count",doc.getInteger("count",0)+prevCount)
+	    									.append("name", doc.get("name")))
+	    			, fo);
 	    	
-	    } );
+	    //} );
 		
 	}
 
@@ -180,5 +199,24 @@ public class TwitterMain {
 		  strs.add(mat.group(1));
 		}
 		return strs;
+	}
+	
+	public enum ConnectionFactory {
+	    CONNECTION;
+	    private MongoClient client = null;
+
+	    private ConnectionFactory() {
+	        try {
+	            client = new MongoClient("localhost",27017);
+	        } catch (Exception e) {
+	            // Log it.
+	        }
+	    }
+
+	    public MongoClient getClient() {
+	        if (client == null)
+	            throw new RuntimeException();
+	        return client;
+	    }
 	}
 }

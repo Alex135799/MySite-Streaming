@@ -1,15 +1,12 @@
 package com.mysite.streaming;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
@@ -29,9 +26,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.spark.MongoSpark;
-import com.mongodb.spark.config.ReadConfig;
-import com.mongodb.spark.config.WriteConfig;
 
 import scala.Tuple2;
 import twitter4j.Status;
@@ -50,7 +44,7 @@ public class TwitterMain {
 	    System.setProperty("twitter4j.http.proxyHost", "www-proxy");
 	    System.setProperty("twitter4j.http.proxyPort", "80");
 	    System.setProperty("twitter4j.http.proxyUser", "n0252056");
-	    System.setProperty("twitter4j.http.proxyPassword", "9BioChem");
+	    System.setProperty("twitter4j.http.proxyPassword", "*****");
 	    //String user = "Alex";
 	    String user = "n0252056";
 	    
@@ -79,7 +73,7 @@ public class TwitterMain {
 		});
 		//Count hashtags
 		//first Duration: size of window to reduce, second Duration: how often to execute
-		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(15 * 1000), new Duration(10 * 1000));
+		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(10 * 1000), new Duration(10 * 1000));
 		//Make the count the Key
 		JavaPairDStream<Long, String> hashtagCountMap = hashtagTextMap.mapToPair(new PairFunction<Tuple2<String, Long>, Long, String>(){
 			private static final long serialVersionUID = 1L;
@@ -100,53 +94,32 @@ public class TwitterMain {
 		});
 		hashtagCountMap.print();
 		
-		/*Map<String, String> readOverrides = new HashMap<String, String>();
-		readOverrides.put("collection", "myCollection");
-		readOverrides.put("readPreference.name", "secondaryPreferred");
-		ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);
-		JavaRDD<Document> readRDD = MongoSpark.load(ctx,readConfig);
-		System.out.println("READ:");
-		readRDD.collect().forEach(doc -> System.out.println(doc));*/
-		
 		//TODO: Facebook
 		//https://developers.facebook.com/docs/javascript/quickstart
 		
 		hashtagCountMap.foreachRDD( (JavaPairRDD<Long,String> rdd) -> {		
 			rdd.foreachPartition( list -> {
-				MongoClient mongo = new MongoClient("localhost",27017);
+				//MongoClient mongo = new MongoClient("localhost",27017);
+				MongoClient mongo = ConnectionFactory.CONNECTION.getClient();
 				MongoDatabase db = mongo.getDatabase("test");
 				MongoCollection<Document> col = db.getCollection("myCollection");
 				
-				while(list.hasNext()){
-					Tuple2<Long,String> pair = list.next();
-					if(!CharMatcher.ASCII.matchesAllOf(pair._2)){
-						continue;
+				list.forEachRemaining(pair -> {
+					if(CharMatcher.ASCII.matchesAllOf(pair._2)){
+						Document javadoc;
+						try{
+							javadoc = Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
+						}catch(JsonParseException err){
+							javadoc = Document.parse("{name: \"JsonError\",count:0}");
+						}
+						if((int)javadoc.get("count") > 0){
+							mongoUpsert(javadoc, col);
+						}
 					}
-					Document javadoc;
-					try{
-						javadoc = Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
-					}catch(JsonParseException err){
-						javadoc = Document.parse("{name: \"JsonError\",count:0}");
-					}
-					if((int)javadoc.get("count") == 0){
-						continue;
-					}
-					mongoUpsert(javadoc, col);
-				}
-				//JavaPairRDD<Long,String> rddFiltered = rdd.filter( pair -> CharMatcher.ASCII.matchesAllOf(pair._2));
-				/*JavaRDD<Document> javadoc = rddFiltered.map( pair -> {
-					try{
-						return Document.parse("{name: \""+pair._2+"\",count: "+pair._1+"}");
-					}catch(JsonParseException err){
-						return Document.parse("{name: \"JsonError\",count:0}");
-					}
-				});*/
-
-				/*javadoc = javadoc.filter( doc -> (int)doc.get("count") > 0);
-				javadoc.takeSample(false, 10).forEach( doc -> System.out.println(doc));
-				mongoUpsert(javadoc, col, rddFiltered);*/
+				});
+				
 				System.out.println("SAVED");
-				mongo.close();
+				//mongo.close();
 			});
 		});
 		
@@ -159,35 +132,26 @@ public class TwitterMain {
 	}
 	
 	private static void mongoUpsert(Document doc, MongoCollection<Document> col) {
-		/*Map<String, String> writeOverrides = new HashMap<String, String>();
-		writeOverrides.put("collection", "myCollection");
-		writeOverrides.put("writeConcern.w", "majority");
-		WriteConfig writeConf = WriteConfig.create(ctx).withOptions(writeOverrides);
-		
-		Map<String, String> readOverrides = new HashMap<String, String>();
-	    readOverrides.put("collection", "spark");
-	    readOverrides.put("readPreference.name", "secondaryPreferred");
-	    ReadConfig readConfig = ReadConfig.create(ctx).withOptions(readOverrides);*/
-	    
-	    FindOneAndUpdateOptions fo = new FindOneAndUpdateOptions();
-	    fo.upsert(true);
-	    
-	    //javadoc.foreachAsync( (Document doc) -> {
-	    	
-	    	int prevCount = 0;
-		    FindIterable<Document> toReplaceDoc = col.find(Filters.eq("name", doc.get("name")));
-		    
-		    for(Document docMatched : toReplaceDoc){
-		    	prevCount = docMatched.getInteger("count", 0);
-		    }
-	    	
-	    	col.findOneAndUpdate(Filters.eq("name", doc.get("name")), 
-	    			new Document("$set", new Document("count",doc.getInteger("count",0)+prevCount)
-	    									.append("name", doc.get("name")))
-	    			, fo);
-	    	
-	    //} );
-		
+
+		FindOneAndUpdateOptions fo = new FindOneAndUpdateOptions();
+		fo.upsert(true);
+
+		//javadoc.foreachAsync( (Document doc) -> {
+
+		int prevCount = 0;
+		FindIterable<Document> toReplaceDoc = col.find(Filters.eq("name", doc.get("name")));
+
+		for(Document docMatched : toReplaceDoc){
+			prevCount = docMatched.getInteger("count", 0);
+		}
+
+		col.findOneAndUpdate(Filters.eq("name", doc.get("name")), 
+				new Document("$set", new Document("count",doc.getInteger("count",0)+prevCount)
+						.append("name", doc.get("name")))
+				, fo);
+
+		//} );
+
 	}
 
 	public static ArrayList<String> getHashTags(Status status){

@@ -74,6 +74,9 @@ var angularFiles = [
   'apps/issue_tracking/controllers/home.js',
   'apps/issue_tracking/app.js',
   'apps/issue_tracking/directives/navbar.directive.js',
+  'apps/twitter_tags/controllers/home.js',
+  'apps/twitter_tags/app.js',
+  'apps/twitter_tags/directives/navbar.directive.js',
 ];
 var uglified = uglifyJs.minify(angularFiles, { compress : false });
 fs.writeFile('home/lib/mySite.min.js', uglified.code, function (err){
@@ -99,6 +102,8 @@ app.use(function(req, res) {
   //if(req.path.includes("issue")){
   if(req.path.search("/issue/")){
     res.sendFile(path.join(__dirname, 'apps', 'issue_tracking', 'index.html'));
+  }else if(req.path.search("/twitter_tags/")){
+    res.sendFile(path.join(__dirname, 'apps', 'twitter_tags', 'index.html'));
   }else{
     res.sendFile(path.join(__dirname, 'home', 'index.html'));
   }

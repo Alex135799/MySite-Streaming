@@ -16,6 +16,14 @@ form label {
 #strapline {
 	color: #BCC6CC;
 }
+table {
+	color: #BCC6CC;
+}
+.table-striped>tbody>tr:nth-child(odd)>td, 
+.table-striped>tbody>tr:nth-child(odd)>th {
+   background-color: #882601; // Choose your own color here
+ }
+
 .full-background {
   position: fixed;
   top: 50%;

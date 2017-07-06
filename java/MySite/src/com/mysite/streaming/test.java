@@ -11,8 +11,8 @@ import com.mongodb.client.model.FindOneAndUpdateOptions;
 
 public class test {
 
-	public static void main(String[] args) {
-		MongoClient mongo = new MongoClient("localhost",27017);
+	public static void main(String[] args){
+		MongoClient mongo = new MongoClient("ocalhost",27017);
 	    MongoDatabase db = mongo.getDatabase("test");
 	    MongoCollection<Document> col = db.getCollection("myCollection");
 	    

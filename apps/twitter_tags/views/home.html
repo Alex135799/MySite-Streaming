@@ -1,0 +1,30 @@
+<navbar></navbar>
+
+<page-header content="vm.pageHeader"></page-header>
+
+<div id="addvspace"></div>
+
+<div class="container">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Tag Name</th>
+				<th>Tag Count</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="hashtag in vm.hashtags">
+				<td>{{hashtag.name}}</td>
+				<td>{{hashtag.count}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div ng-hide="vm.trolling">
+		<button class="btn btn-default" ng-click="vm.trollHashtags()">Get Hashtags</button>
+	</div>
+	<div ng-show="vm.trolling">
+		<button class="btn btn-default" ng-click="vm.stopHashtags()">Stop Getting Hashtags</button>
+	</div>
+</div>
+  
+</div>

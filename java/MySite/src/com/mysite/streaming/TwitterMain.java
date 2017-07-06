@@ -56,7 +56,7 @@ public class TwitterMain {
 		//conf.set("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.myCollection");
 		conf.set("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.myCollection");
 		JavaSparkContext ctx = new JavaSparkContext(conf);
-		JavaStreamingContext sctx = new JavaStreamingContext(ctx, new Duration(5 * 1000));
+		JavaStreamingContext sctx = new JavaStreamingContext(ctx, new Duration(1 * 1000));
 		sctx.checkpoint("file:///home/"+user+"/TwitterCheckpoint");
 		//sctx.checkpoint("hdfs:///user/n0252056/TwitterCheckpoint");
 		
@@ -73,7 +73,7 @@ public class TwitterMain {
 		});
 		//Count hashtags
 		//first Duration: size of window to reduce, second Duration: how often to execute
-		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(10 * 1000), new Duration(10 * 1000));
+		JavaPairDStream<String, Long> hashtagTextMap = hashtagText.countByValueAndWindow(new Duration(1 * 1000), new Duration(1 * 1000));
 		//Make the count the Key
 		JavaPairDStream<Long, String> hashtagCountMap = hashtagTextMap.mapToPair(new PairFunction<Tuple2<String, Long>, Long, String>(){
 			private static final long serialVersionUID = 1L;

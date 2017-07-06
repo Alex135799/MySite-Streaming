@@ -21,9 +21,11 @@
 	</table>
 	<div ng-hide="vm.trolling">
 		<button class="btn btn-default" ng-click="vm.trollHashtags()">Get Hashtags</button>
+		<button class="btn btn-default" ng-click="vm.removeHashtags()">Remove Hashtags</button>
 	</div>
 	<div ng-show="vm.trolling">
 		<button class="btn btn-default" ng-click="vm.stopHashtags()">Stop Getting Hashtags</button>
+		<button class="btn btn-default" ng-click="vm.removeHashtags()">Remove Hashtags</button>
 	</div>
 </div>
   

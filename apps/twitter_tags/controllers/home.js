@@ -11,6 +11,7 @@
 		vm.trollHashtags = trollHashtags;
 		vm.trolling = false;
 		vm.stopHashtags = stopHashtags;
+		vm.removeHashtags = removeHashtags;
 		
 		getHashtags();
 		
@@ -36,7 +37,30 @@
 				})
 				.error(function(data, status){
 					alert("ERROR: "+JSON.stringify(data)+ " STATUS: "+status)
-					vm.loading = false;
+				});
+		}
+		
+		function removeHashtags(){
+			var apiGetHashtags = "http://localhost:8080/ProjTrackingService/rest/proj/hashtags"
+			console.log("API: "+apiGetHashtags)
+			//make api call
+			/*var request = {
+				method: 'DELETE',
+				url: apiGetHashtags,
+				headers: {
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "GET, POST, DELETE, PUT",
+				},
+			}
+			$http(request)*/
+			$http.delete(apiGetHashtags)
+				.success(function(){
+					if(!vm.trolling){
+						getHashtags();
+					}
+				})
+				.error(function(data, status){
+					alert("ERROR: "+JSON.stringify(data)+ " STATUS: "+status)
 				});
 		}
 		

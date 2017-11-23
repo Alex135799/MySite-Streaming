@@ -1,5 +1,5 @@
 (function() {
-	
+
 	angular.module('mySite').controller('twitTagsCtrl', twitTagsCtrl);
 
 	twitTagsCtrl.$inject = [ "$routeParams", "mySiteData", "$window", "authentication", "$http" ]
@@ -12,24 +12,25 @@
 		vm.trolling = false;
 		vm.stopHashtags = stopHashtags;
 		vm.removeHashtags = removeHashtags;
-		
+
 		getHashtags();
-		
+
 		function stopHashtags(){
 			vm.trolling = false;
 		}
-		
+
 		function trollHashtags(){
 			vm.trolling = true;
 			getHashtags();
 		}
-		
+
 		function getHashtags(){
 			var apiGetHashtags = "http://localhost:8080/ProjTrackingService/rest/proj/hashtagTop?topN=10"
 			console.log("API: "+apiGetHashtags)
 			//make api call
 			$http.get(apiGetHashtags)
 				.success(function(data){
+					console.log(JSON.stringify(data))
 					vm.hashtags = data;
 					if(vm.trolling){
 						setTimeout(getHashtags, trollTime);
@@ -39,7 +40,7 @@
 					alert("ERROR: "+JSON.stringify(data)+ " STATUS: "+status)
 				});
 		}
-		
+
 		function removeHashtags(){
 			var apiGetHashtags = "http://localhost:8080/ProjTrackingService/rest/proj/hashtags"
 			console.log("API: "+apiGetHashtags)
@@ -63,7 +64,7 @@
 					alert("ERROR: "+JSON.stringify(data)+ " STATUS: "+status)
 				});
 		}
-		
+
 		vm.pageHeader = {
 			title : "Welcome to Big Al's Twitter Tag Tracking!",
 			strapline : 'Where you can see all that is trending!'

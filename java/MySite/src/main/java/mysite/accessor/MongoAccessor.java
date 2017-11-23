@@ -7,10 +7,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import main.java.mysite.streaming.ConnectionFactory;
 import org.bson.Document;
 
-public class MongoAccessor {
+import java.io.Serializable;
+
+public class MongoAccessor implements Serializable{
 
   private MongoClient client;
   private MongoDatabase mongoDB;
